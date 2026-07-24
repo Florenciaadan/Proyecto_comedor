@@ -3,7 +3,9 @@ import { db, auth } from "./firebase.js";
 import {
     collection,
     getDocs,
-    addDoc
+    addDoc,
+    updateDoc,
+    doc
 } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
 import {
@@ -12,6 +14,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
 const contenido = document.getElementById("contenido");
+let idProductoEditar = null;
 
 // ===============================
 // VERIFICAR SESIÓN
@@ -92,7 +95,18 @@ async function cargarProductos(){
 
                 <td>
 
-                    <button>Editar</button>
+                    <button
+    class="btnEditar"
+    data-id="${doc.id}"
+    data-nombre="${p.nombre}"
+    data-precio="${p.precio}"
+    data-unidad="${p.unidad}"
+    data-activo="${p.activo}"
+>
+
+✏️
+
+</button>
 
                 </td>
 
@@ -113,6 +127,27 @@ async function cargarProductos(){
         <button id="btnNuevoProducto">
 
             + Agregar producto
+            document.addEventListener("click",(e)=>{
+
+    if(!e.target.classList.contains("btnEditar")) return;
+
+    idProductoEditar = e.target.dataset.id;
+
+    document.getElementById("nuevoNombre").value =
+        e.target.dataset.nombre;
+
+    document.getElementById("nuevoPrecio").value =
+        e.target.dataset.precio;
+
+    document.getElementById("nuevaUnidad").value =
+        e.target.dataset.unidad;
+
+    document.getElementById("nuevoEstado").value =
+        e.target.dataset.activo;
+
+    document.getElementById("modalProducto").style.display="flex";
+
+});
 
         </button>
 
