@@ -16,49 +16,55 @@ const mensaje = document.getElementById("mensaje");
 
 btn.addEventListener("click", async () => {
 
-    try{
+    mensaje.innerHTML = "";
+
+    try {
 
         const credencial = await signInWithEmailAndPassword(
 
             auth,
-
-            email.value,
-
+            email.value.trim(),
             password.value
 
         );
 
-        const usuario = credencial.user.email;
+        const emailUsuario = credencial.user.email;
 
-        const usuarios = await getDocs(collection(db,"usuarios"));
+        const usuarios = await getDocs(collection(db, "usuarios"));
 
         let rol = "";
 
-        usuarios.forEach(doc=>{
+        usuarios.forEach(doc => {
 
-            if(doc.data().email === usuario){
+            const datos = doc.data();
 
-                rol = doc.data().rol;
+            if (datos.email === emailUsuario) {
+
+                rol = datos.rol;
 
             }
 
         });
 
-        if(rol==="admin"){
+        if (rol === "admin") {
 
-            window.location.href="admin.html";
+            window.location.href = "admin.html";
+
+        } else if (rol === "usuario") {
+
+            window.location.href = "usuario.html";
+
+        } else {
+
+            mensaje.innerHTML = "El usuario no tiene un rol asignado.";
 
         }
-        else{
 
-            window.location.href="index.html";
+    } catch (error) {
 
-        }
+        console.error(error);
 
-    }
-    catch(error){
-
-        mensaje.innerHTML="Usuario o contraseña incorrectos.";
+        mensaje.innerHTML = "Usuario o contraseña incorrectos.";
 
     }
 
