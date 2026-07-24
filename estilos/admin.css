@@ -143,3 +143,157 @@ body{
     margin-top:25px;
 
 }
+/* ===========================
+   TABLA PRODUCTOS
+=========================== */
+
+.tablaProductos{
+
+    width:100%;
+
+    border-collapse:collapse;
+
+    margin-top:20px;
+
+    background:white;
+
+    border:1px solid #dbe3eb;
+
+    border-radius:8px;
+
+    overflow:hidden;
+
+}
+
+.tablaProductos th{
+
+    background:#005B9A;
+
+    color:white;
+
+    padding:14px;
+
+    text-align:left;
+
+    font-size:14px;
+
+}
+
+.tablaProductos td{
+
+    padding:14px;
+
+    border-bottom:1px solid #ececec;
+
+    font-size:15px;
+
+}
+
+.tablaProductos tr:hover{
+
+    background:#f5f9fd;
+
+}
+
+/* Ancho de columnas */
+
+.tablaProductos th:nth-child(1),
+.tablaProductos td:nth-child(1){
+
+    width:45%;
+
+}
+
+.tablaProductos th:nth-child(2),
+.tablaProductos td:nth-child(2){
+
+    width:15%;
+
+    text-align:right;
+
+}
+
+.tablaProductos th:nth-child(3),
+.tablaProductos td:nth-child(3){
+
+    width:15%;
+
+    text-align:center;
+
+}
+
+.tablaProductos th:nth-child(4),
+.tablaProductos td:nth-child(4){
+
+    width:15%;
+
+    text-align:center;
+
+}
+
+.tablaProductos th:nth-child(5),
+.tablaProductos td:nth-child(5){
+
+    width:10%;
+
+    text-align:center;
+
+}
+
+/* Botón editar */
+
+.btnEditar{
+
+    width:34px;
+
+    height:34px;
+
+    border:none;
+
+    background:#005B9A;
+
+    color:white;
+
+    border-radius:6px;
+
+    cursor:pointer;
+
+    transition:.2s;
+
+    font-size:16px;
+
+}
+
+.btnEditar:hover{
+
+    background:#00467a;
+
+}
+
+/* Botón agregar */
+
+#btnNuevoProducto{
+
+    margin-top:20px;
+
+    background:#005B9A;
+
+    color:white;
+
+    border:none;
+
+    padding:12px 20px;
+
+    border-radius:6px;
+
+    cursor:pointer;
+
+    font-size:15px;
+
+}
+
+#btnNuevoProducto:hover{
+
+    background:#00467a;
+
+}
