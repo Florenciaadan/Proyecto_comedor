@@ -127,7 +127,11 @@ async function cargarProductos(){
         <button id="btnNuevoProducto">
 
             + Agregar producto
-            document.addEventListener("click",(e)=>{
+            
+
+        </button>
+
+        document.addEventListener("click",(e)=>{
 
     if(!e.target.classList.contains("btnEditar")) return;
 
@@ -148,8 +152,6 @@ async function cargarProductos(){
     document.getElementById("modalProducto").style.display="flex";
 
 });
-
-        </button>
 
     `;
 
