@@ -133,3 +133,19 @@ async function cargarPedidos() {
 // ===============================
 
 cargarProductos();
+
+document.addEventListener("click",(e)=>{
+
+    if(e.target.id==="btnNuevoProducto"){
+
+        document.getElementById("modalProducto").style.display="flex";
+
+    }
+
+});
+
+document.getElementById("cerrarProducto").onclick=()=>{
+
+    document.getElementById("modalProducto").style.display="none";
+
+};
