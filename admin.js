@@ -31,24 +31,13 @@ onAuthStateChanged(auth, (user) => {
 // ===============================
 
 document.getElementById("btnProductos").onclick = cargarProductos;
-
 document.getElementById("btnPedidos").onclick = cargarPedidos;
 
 document.getElementById("btnSalir").onclick = async () => {
 
-    try {
+    await signOut(auth);
 
-        await signOut(auth);
-
-        window.location.href = "index.html";
-
-    } catch (error) {
-
-        console.error(error);
-
-        alert("No se pudo cerrar la sesión.");
-
-    }
+    window.location.href = "index.html";
 
 };
 
@@ -56,59 +45,79 @@ document.getElementById("btnSalir").onclick = async () => {
 // PRODUCTOS
 // ===============================
 
-async function cargarProductos() {
+async function cargarProductos(){
 
-    contenido.innerHTML = "<h2>Productos</h2>";
+    const snapshot = await getDocs(collection(db,"productos"));
 
-    const productos = await getDocs(collection(db, "productos"));
+    let html = `
 
-    contenido.innerHTML += `
-        <table border="1" width="100%" cellspacing="0" cellpadding="8">
+        <h2>Productos</h2>
 
-            <tr>
+        <table class="tablaProductos">
 
-                <th>Producto</th>
+            <thead>
 
-                <th>Precio</th>
+                <tr>
 
-                <th>Unidad</th>
+                    <th>Producto</th>
+                    <th>Precio</th>
+                    <th>Unidad</th>
+                    <th>Estado</th>
+                    <th></th>
 
-                <th>Activo</th>
+                </tr>
 
-            </tr>
+            </thead>
+
+            <tbody>
+
     `;
 
-    productos.forEach(doc => {
+    snapshot.forEach(doc=>{
 
         const p = doc.data();
 
-        contenido.innerHTML += `
+        html += `
+
             <tr>
 
                 <td>${p.nombre}</td>
 
-                <td>$${p.precio}</td>
+                <td>$ ${Number(p.precio).toLocaleString("es-AR")}</td>
 
                 <td>${p.unidad}</td>
 
-                <td>${p.activo ? "Sí" : "No"}</td>
+                <td>${p.activo ? "🟢 Activo" : "🔴 Inactivo"}</td>
+
+                <td>
+
+                    <button>Editar</button>
+
+                </td>
 
             </tr>
+
         `;
 
     });
 
-    contenido.innerHTML += `
+    html += `
+
+            </tbody>
+
         </table>
 
         <br>
 
         <button id="btnNuevoProducto">
 
-            Agregar producto
+            + Agregar producto
 
         </button>
+
     `;
+
+    contenido.innerHTML = html;
 
 }
 
@@ -116,23 +125,21 @@ async function cargarProductos() {
 // PEDIDOS
 // ===============================
 
-async function cargarPedidos() {
+function cargarPedidos(){
 
     contenido.innerHTML = `
 
         <h2>Pedidos</h2>
 
-        <p>Todavía no hay pedidos.</p>
+        <p>No hay pedidos todavía.</p>
 
     `;
 
 }
 
 // ===============================
-// INICIO
+// MODAL
 // ===============================
-
-cargarProductos();
 
 document.addEventListener("click",(e)=>{
 
@@ -149,3 +156,9 @@ document.getElementById("cerrarProducto").onclick=()=>{
     document.getElementById("modalProducto").style.display="none";
 
 };
+
+// ===============================
+// INICIO
+// ===============================
+
+cargarProductos();
