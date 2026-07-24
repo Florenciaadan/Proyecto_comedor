@@ -130,28 +130,7 @@ async function cargarProductos(){
             
 
         </button>
-
-        document.addEventListener("click",(e)=>{
-
-    if(!e.target.classList.contains("btnEditar")) return;
-
-    idProductoEditar = e.target.dataset.id;
-
-    document.getElementById("nuevoNombre").value =
-        e.target.dataset.nombre;
-
-    document.getElementById("nuevoPrecio").value =
-        e.target.dataset.precio;
-
-    document.getElementById("nuevaUnidad").value =
-        e.target.dataset.unidad;
-
-    document.getElementById("nuevoEstado").value =
-        e.target.dataset.activo;
-
-    document.getElementById("modalProducto").style.display="flex";
-
-});
+        
 
     `;
 
@@ -183,6 +162,13 @@ document.addEventListener("click",(e)=>{
 
     if(e.target.id==="btnNuevoProducto"){
 
+        idProductoEditar = null;
+
+        document.getElementById("nuevoNombre").value = "";
+        document.getElementById("nuevoPrecio").value = "";
+        document.getElementById("nuevaUnidad").selectedIndex = 0;
+        document.getElementById("nuevoEstado").value = "true";
+
         document.getElementById("modalProducto").style.display="flex";
 
     }
@@ -194,6 +180,23 @@ document.getElementById("cerrarProducto").onclick=()=>{
     document.getElementById("modalProducto").style.display="none";
 
 };
+document.addEventListener("click",(e)=>{
+
+    if(!e.target.classList.contains("btnEditar")) return;
+
+    idProductoEditar = e.target.dataset.id;
+
+    document.getElementById("nuevoNombre").value = e.target.dataset.nombre;
+
+    document.getElementById("nuevoPrecio").value = e.target.dataset.precio;
+
+    document.getElementById("nuevaUnidad").value = e.target.dataset.unidad;
+
+    document.getElementById("nuevoEstado").value = e.target.dataset.activo;
+
+    document.getElementById("modalProducto").style.display="flex";
+
+});
 document.getElementById("guardarProducto").onclick = async () => {
 
     const nombre = document.getElementById("nuevoNombre").value.trim();
@@ -220,17 +223,50 @@ document.getElementById("guardarProducto").onclick = async () => {
 
     }
 
-    await addDoc(collection(db,"productos"),{
+if(idProductoEditar){
 
-        nombre,
+    await updateDoc(
 
-        precio,
+        doc(db,"productos",idProductoEditar),
 
-        unidad,
+        {
 
-        activo
+            nombre,
 
-    });
+            precio,
+
+            unidad,
+
+            activo
+
+        }
+
+    );
+
+}
+else{
+
+    await addDoc(
+
+        collection(db,"productos"),
+
+        {
+
+            nombre,
+
+            precio,
+
+            unidad,
+
+            activo
+
+        }
+
+    );
+
+}
+
+idProductoEditar = null;
 
     document.getElementById("modalProducto").style.display="none";
 
