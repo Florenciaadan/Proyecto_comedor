@@ -1,0 +1,427 @@
+/* ==========================
+   ESTILO GENERAL
+========================== */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+
+    font-family: Arial, Helvetica, sans-serif;
+
+    background:#eef2f6;
+
+    color:#333;
+
+    padding:35px;
+
+}
+
+/* ==========================
+   CONTENEDOR
+========================== */
+
+.contenedor{
+
+    max-width:1100px;
+
+    margin:auto;
+
+}
+
+/* ==========================
+   CABECERA
+========================== */
+
+.cabecera{
+
+    background:#005B9A;
+
+    color:white;
+
+    padding:18px 30px;
+
+    border-radius:8px 8px 0 0;
+
+}
+
+.cabecera h1{
+
+    font-size:28px;
+
+    font-weight:normal;
+
+}
+
+/* ==========================
+   TARJETA
+========================== */
+
+.card{
+
+    background:white;
+
+    padding:30px;
+
+    border-radius:0 0 8px 8px;
+
+    box-shadow:0 8px 25px rgba(0,0,0,.08);
+
+}
+
+/* ==========================
+   FILAS
+========================== */
+
+.fila{
+
+    display:flex;
+
+    gap:20px;
+
+    align-items:flex-end;
+
+    margin-bottom:20px;
+
+}
+
+.campo{
+
+    flex:1;
+
+}
+
+.campo-grande{
+
+    flex:2;
+
+}
+
+.campo-chico{
+
+    max-width:120px;
+
+}
+
+/* ==========================
+   LABELS
+========================== */
+
+label{
+
+    display:block;
+
+    margin-bottom:6px;
+
+    font-size:13px;
+
+    font-weight:bold;
+
+    color:#005B9A;
+
+}
+
+/* ==========================
+   INPUTS
+========================== */
+
+input,
+select,
+textarea{
+
+    width:100%;
+
+    padding:10px 12px;
+
+    border:1px solid #cfd8e3;
+
+    border-radius:6px;
+
+    font-size:14px;
+
+    background:white;
+
+    transition:.2s;
+
+}
+
+input:focus,
+select:focus,
+textarea:focus{
+
+    outline:none;
+
+    border-color:#005B9A;
+
+    box-shadow:0 0 5px rgba(0,91,154,.20);
+
+}
+
+#fechaPedido{
+
+    background:#ececec;
+
+    color:#666;
+
+    font-weight:bold;
+
+}
+
+/* ==========================
+   TITULOS
+========================== */
+
+.titulo{
+
+    font-size:20px;
+
+    color:#005B9A;
+
+    margin-bottom:15px;
+
+    font-weight:bold;
+
+}
+
+hr{
+
+    border:none;
+
+    border-top:1px solid #dbe3eb;
+
+    margin:25px 0;
+
+}
+
+/* ==========================
+   TABLA PRODUCTOS
+========================== */
+
+.encabezadoProductos{
+
+    display:grid;
+
+    grid-template-columns:1fr 120px 120px;
+
+    gap:15px;
+
+    font-weight:bold;
+
+    color:#005B9A;
+
+    margin-bottom:10px;
+
+    padding:0 10px;
+
+}
+
+.producto{
+
+    display:grid;
+
+    grid-template-columns:1fr 120px 120px;
+
+    gap:15px;
+
+    align-items:center;
+
+    background:#fafbfd;
+
+    border:1px solid #dfe6ee;
+
+    border-radius:6px;
+
+    padding:12px;
+
+    margin-bottom:8px;
+
+}
+
+.producto label{
+
+    margin:0;
+
+    color:#333;
+
+}
+
+/* ==========================
+   TOTAL
+========================== */
+
+.filaTotal{
+
+    display:flex;
+
+    justify-content:flex-end;
+
+    text-align:right;
+
+}
+
+.filaTotal h2{
+
+    color:#666;
+
+    font-size:16px;
+
+    margin-bottom:5px;
+
+}
+
+.filaTotal h1{
+
+    color:#005B9A;
+
+    font-size:38px;
+
+    font-weight:bold;
+
+}
+
+.filaTotal small{
+
+    font-size:16px;
+
+    color:#666;
+
+}
+
+/* ==========================
+   BOTON
+========================== */
+
+.botones{
+
+    display:flex;
+
+    justify-content:center;
+
+    margin-top:35px;
+
+}
+
+button{
+
+    background:#005B9A;
+
+    color:white;
+
+    border:none;
+
+    border-radius:6px;
+
+    padding:14px 35px;
+
+    font-size:15px;
+
+    cursor:pointer;
+
+    transition:.2s;
+
+}
+
+button:hover{
+
+    background:#00497c;
+
+}
+
+/* ==========================
+   MODAL
+========================== */
+
+.modal{
+
+    display:none;
+
+    position:fixed;
+
+    inset:0;
+
+    background:rgba(0,0,0,.35);
+
+    backdrop-filter:blur(5px);
+
+    justify-content:center;
+
+    align-items:center;
+
+}
+
+.modal-contenido{
+
+    width:430px;
+
+    background:white;
+
+    border-radius:8px;
+
+    padding:30px;
+
+    text-align:center;
+
+    box-shadow:0 15px 35px rgba(0,0,0,.25);
+
+}
+
+.modal-contenido h2{
+
+    color:#005B9A;
+
+    margin-bottom:15px;
+
+}
+
+.modal-contenido p{
+
+    line-height:1.5;
+
+    margin-bottom:20px;
+
+}
+
+/* ==========================
+   RESPONSIVE
+========================== */
+
+@media(max-width:900px){
+
+    .fila{
+
+        flex-direction:column;
+
+        align-items:stretch;
+
+    }
+
+    .encabezadoProductos{
+
+        display:none;
+
+    }
+
+    .producto{
+
+        grid-template-columns:1fr;
+
+    }
+
+    .campo-chico{
+
+        max-width:100%;
+
+    }
+
+    .filaTotal{
+
+        justify-content:flex-start;
+
+        text-align:left;
+
+    }
+
+}
