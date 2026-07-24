@@ -2,7 +2,8 @@ import { db, auth } from "./firebase.js";
 
 import {
     collection,
-    getDocs
+    getDocs,
+    addDoc
 } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
 import {
@@ -154,6 +155,57 @@ document.addEventListener("click",(e)=>{
 document.getElementById("cerrarProducto").onclick=()=>{
 
     document.getElementById("modalProducto").style.display="none";
+
+};
+document.getElementById("guardarProducto").onclick = async () => {
+
+    const nombre = document.getElementById("nuevoNombre").value.trim();
+
+    const precio = Number(document.getElementById("nuevoPrecio").value);
+
+    const unidad = document.getElementById("nuevaUnidad").value;
+
+    const activo = document.getElementById("nuevoEstado").value === "true";
+
+    if(nombre===""){
+
+        alert("Ingrese el nombre del producto.");
+
+        return;
+
+    }
+
+    if(precio<=0){
+
+        alert("Ingrese un precio válido.");
+
+        return;
+
+    }
+
+    await addDoc(collection(db,"productos"),{
+
+        nombre,
+
+        precio,
+
+        unidad,
+
+        activo
+
+    });
+
+    document.getElementById("modalProducto").style.display="none";
+
+    document.getElementById("nuevoNombre").value="";
+
+    document.getElementById("nuevoPrecio").value="";
+
+    document.getElementById("nuevaUnidad").selectedIndex=0;
+
+    document.getElementById("nuevoEstado").selectedIndex=0;
+
+    cargarProductos();
 
 };
 
