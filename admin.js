@@ -1,3 +1,6 @@
+import { signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+import { auth } from "./firebase.js";
+
 import { db } from "./firebase.js";
 
 import {
