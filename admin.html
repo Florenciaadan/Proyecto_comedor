@@ -103,6 +103,57 @@
     </div>
 
 </div>
+<!-- MODAL PEDIDO -->
+
+<div id="modalPedido" class="modal">
+
+    <div class="modal-contenido">
+
+        <h2>Detalle del pedido</h2>
+
+        <p><b>Usuario:</b> <span id="detalleUsuario"></span></p>
+
+        <p><b>Fecha del evento:</b> <span id="detalleFecha"></span></p>
+
+        <p><b>Horario:</b> <span id="detalleHora"></span></p>
+
+        <p><b>Lugar:</b> <span id="detalleLugar"></span></p>
+
+        <p><b>Personas:</b> <span id="detallePersonas"></span></p>
+
+        <hr>
+
+        <h3>Productos</h3>
+
+        <div id="detalleProductos"></div>
+
+        <hr>
+
+        <p><b>Total:</b> <span id="detalleTotal"></span></p>
+
+        <p><b>OC / PD:</b> <span id="detalleDocumento"></span></p>
+
+        <p><b>Comentarios:</b></p>
+
+        <textarea
+            id="detalleComentarios"
+            rows="4"
+            readonly
+        ></textarea>
+
+        <div class="modal-botones">
+
+            <button id="cerrarPedido">
+
+                Cerrar
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
 
 <script type="module" src="admin.js"></script>
 
