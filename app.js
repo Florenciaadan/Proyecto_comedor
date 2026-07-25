@@ -235,7 +235,7 @@ btnEnviar.addEventListener("click", async () => {
 
     };
 
-try {
+    try {
 
     console.log("Pedido a guardar:", pedido);
 
@@ -247,11 +247,13 @@ try {
 
     location.reload();
 
-} catch (error) {
+    } catch (error) {
 
     console.error("ERROR FIRESTORE:", error);
 
     alert("Error al guardar el pedido.");
+
+    }
 
 });
 
