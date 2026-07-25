@@ -101,6 +101,9 @@ function agregarFila(){
 }
 
 window.agregarFila = agregarFila;
+document
+    .getElementById("btnAgregarProducto")
+    .addEventListener("click", agregarFila);
 
 // ============================
 // TOTAL

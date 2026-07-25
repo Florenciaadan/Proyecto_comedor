@@ -64,7 +64,7 @@ body{
 
     background:white;
 
-    padding:30px;
+    padding:20px;
 
     border-radius:0 0 8px 8px;
 
@@ -84,7 +84,7 @@ body{
 
     align-items:flex-end;
 
-    margin-bottom:20px;
+    margin-bottom:12px;
 
 }
 
@@ -180,7 +180,7 @@ textarea:focus{
 
     color:#005B9A;
 
-    margin-bottom:15px;
+    margin-bottom:10px;
 
     font-weight:bold;
 
@@ -192,7 +192,7 @@ hr{
 
     border-top:1px solid #dbe3eb;
 
-    margin:25px 0;
+    margin:18px 0;
 
 }
 
