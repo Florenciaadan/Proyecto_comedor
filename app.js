@@ -253,7 +253,7 @@ try {
 
     alert("Error al guardar el pedido.");
 
-}
+});
 
 // ============================
 // MODAL
