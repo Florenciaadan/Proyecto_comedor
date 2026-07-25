@@ -237,7 +237,9 @@ btnEnviar.addEventListener("click", async () => {
 
     try {
 
-        await addDoc(collection(db, "pedidos"), pedido);
+        const docRef = await addDoc(collection(db, "pedidos"), pedido);
+
+        console.log("Pedido guardado con ID:", docRef.id);
 
         alert("Pedido enviado correctamente.");
 
