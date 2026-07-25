@@ -464,3 +464,42 @@ button:hover{
     background:#00467a;
 
 }
+/*=========================
+  MENÚ SUPERIOR
+=========================*/
+
+.menuUsuario{
+
+    margin-top:20px;
+
+    display:flex;
+
+    gap:12px;
+
+}
+
+.menuUsuario button{
+
+    background:white;
+
+    color:#005B9A;
+
+    border:none;
+
+    padding:10px 20px;
+
+    border-radius:6px;
+
+    font-weight:bold;
+
+    cursor:pointer;
+
+    transition:.2s;
+
+}
+
+.menuUsuario button:hover{
+
+    background:#e7f0fa;
+
+}
