@@ -425,3 +425,42 @@ button:hover{
     }
 
 }
+/* ===========================
+   MENÚ USUARIO
+=========================== */
+
+.menuUsuario{
+
+    display:flex;
+
+    gap:12px;
+
+    margin:20px 0 30px 0;
+
+}
+
+.menuUsuario button{
+
+    background:#005B9A;
+
+    color:white;
+
+    border:none;
+
+    border-radius:6px;
+
+    padding:12px 22px;
+
+    font-size:15px;
+
+    cursor:pointer;
+
+    transition:.2s;
+
+}
+
+.menuUsuario button:hover{
+
+    background:#00467a;
+
+}

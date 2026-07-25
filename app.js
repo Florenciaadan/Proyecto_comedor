@@ -1,14 +1,20 @@
-import { db } from "./firebase.js";
+import { db, auth } from "./firebase.js";
 
 import {
     collection,
     getDocs
 } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+import {
+    signOut
+} from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
 const contenedor = document.getElementById("productos");
 const numeroDocumento = document.getElementById("numeroDocumento");
 const btnEnviar = document.getElementById("btnEnviar");
 const totalHTML = document.getElementById("total");
+const btnSalir = document.getElementById("btnSalir");
+const btnMisPedidos = document.getElementById("btnMisPedidos");
+const btnNuevoPedido = document.getElementById("btnNuevoPedido");
 
 let productos = [];
 
@@ -193,5 +199,32 @@ document
 .addEventListener("click",()=>{
 
     document.getElementById("modal").style.display="none";
+
+});
+// ============================
+// CERRAR SESIÓN
+// ============================
+
+btnSalir.addEventListener("click", async () => {
+
+    await signOut(auth);
+
+    window.location.href = "login.html";
+
+});
+
+// ============================
+// MENÚ
+// ============================
+
+btnNuevoPedido.addEventListener("click", () => {
+
+    window.location.href = "index.html";
+
+});
+
+btnMisPedidos.addEventListener("click", () => {
+
+    alert("Próximamente se mostrarán los pedidos realizados.");
 
 });

@@ -4,45 +4,218 @@
 <head>
 
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Ingreso - Servicio de Comedor</title>
+    <title>Servicio de Comedor</title>
 
-    <link rel="stylesheet" href="estilos/login.css">
+    <link rel="stylesheet" href="estilos/estilos.css">
 
 </head>
 
 <body>
 
-<div class="login">
+<div class="contenedor">
 
-    <h1>Servicio de Comedor</h1>
+    <div class="cabecera">
 
-    <p>Andrómaco</p>
+        <h1>Servicio de Comedor</h1>
 
-    <input
-        type="email"
-        id="email"
-        placeholder="Correo electrónico"
-    >
+    </div>
 
-    <input
-        type="password"
-        id="password"
-        placeholder="Contraseña"
-    >
+    <div class="card">
 
-    <button id="btnIngresar">
+        <div class="fila">
 
-        INGRESAR
+            <div class="campo">
 
-    </button>
+                <label>Fecha del pedido</label>
 
-    <p id="mensaje"></p>
+                <input
+                    type="text"
+                    id="fechaPedido"
+                    readonly
+                >
+
+            </div>
+
+        </div>
+
+        <div class="fila">
+
+            <div class="campo">
+
+                <label>Fecha del evento</label>
+
+                <input
+                    type="date"
+                    id="fecha"
+                >
+
+            </div>
+
+            <div class="campo">
+
+                <label>Horario</label>
+
+                <input
+                    type="time"
+                    id="hora"
+                >
+
+            </div>
+
+            <div class="campo campo-grande">
+
+                <label>Sala / Lugar</label>
+
+                <input
+                    type="text"
+                    id="lugar"
+                    placeholder="Ej: Sala Norte"
+                >
+
+            </div>
+
+            <div class="campo campo-chico">
+
+                <label>Personas</label>
+
+                <input
+                    type="number"
+                    id="personas"
+                    min="1"
+                >
+
+            </div>
+
+        </div>
+
+        <hr>
+
+        <div class="titulo">
+
+            Productos
+
+        </div>
+
+        <div class="encabezadoProductos">
+
+            <span>Producto</span>
+
+            <span>Cantidad</span>
+
+            <span>Costo</span>
+
+        </div>
+
+        <div id="productos"></div>
+
+        <div class="filaTotal">
+
+            <div>
+
+                <h2>
+
+                    Costo Total
+
+                </h2>
+
+                <h1>
+
+                    <span id="total">$0</span>
+
+                    <small>+ IVA</small>
+
+                </h1>
+
+            </div>
+
+        </div>
+
+        <hr>
+
+        <div class="fila">
+
+            <div class="campo" style="max-width:120px;">
+
+                <label>Tipo</label>
+
+                <select id="tipoDocumento">
+
+                    <option>OC</option>
+
+                    <option>PD</option>
+
+                </select>
+
+            </div>
+
+            <div class="campo">
+
+                <label>Número</label>
+
+                <input
+                    type="text"
+                    id="numeroDocumento"
+                    maxlength="10"
+                    placeholder="47000xxxxx o 4500xxxxxx"
+                >
+
+            </div>
+
+        </div>
+
+        <div class="campo">
+
+            <label>Comentarios</label>
+
+            <textarea
+                id="comentarios"
+                rows="4"
+                placeholder="Observaciones del pedido..."
+            ></textarea>
+
+        </div>
+
+        <div class="botones">
+
+            <button id="btnEnviar">
+
+                ENVIAR PEDIDO
+
+            </button>
+
+        </div>
+
+    </div>
 
 </div>
 
-<script type="module" src="login.js"></script>
+<!-- MODAL -->
+
+<div id="modal" class="modal">
+
+    <div class="modal-contenido">
+
+        <h2>Información requerida</h2>
+
+        <p>
+
+            Por favor, es necesario indicar un número válido de OC o PD para poder realizar el pedido.
+
+        </p>
+
+        <button id="cerrarModal">
+
+            Aceptar
+
+        </button>
+
+    </div>
+
+</div>
+
+<script type="module" src="app.js"></script>
 
 </body>
 

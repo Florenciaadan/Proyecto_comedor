@@ -52,9 +52,9 @@ btn.addEventListener("click", async () => {
 
         } else if (rol === "usuario") {
 
-            window.location.href = "usuario.html";
+    window.location.href = "index.html";
 
-        } else {
+} else {
 
             mensaje.innerHTML = "El usuario no tiene un rol asignado.";
 
