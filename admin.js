@@ -161,6 +161,7 @@ async function cargarPedidos() {
                     <th>Lugar</th>
                     <th>Total</th>
                     <th>Estado</th>
+                    <th></th>
 
                 </tr>
 
@@ -170,9 +171,9 @@ async function cargarPedidos() {
 
     `;
 
-    snapshot.forEach(doc => {
+    snapshot.forEach(docPedido => {
 
-        const p = doc.data();
+        const p = docPedido.data();
 
         html += `
 
@@ -187,6 +188,19 @@ async function cargarPedidos() {
                 <td>${p.total || "$0"}</td>
 
                 <td>${p.estado || "-"}</td>
+
+                <td>
+
+                    <button
+                        class="btnVerPedido"
+                        data-id="${docPedido.id}"
+                    >
+
+                        👁 Ver
+
+                    </button>
+
+                </td>
 
             </tr>
 
@@ -331,6 +345,77 @@ idProductoEditar = null;
     document.getElementById("nuevoEstado").selectedIndex=0;
 
     cargarProductos();
+
+};
+
+document.addEventListener("click", async (e) => {
+
+    if (!e.target.classList.contains("btnVerPedido")) return;
+
+    const id = e.target.dataset.id;
+
+    const snapshot = await getDocs(collection(db, "pedidos"));
+
+    snapshot.forEach(docPedido => {
+
+        if (docPedido.id !== id) return;
+
+        const p = docPedido.data();
+
+        document.getElementById("detalleUsuario").innerText =
+            p.usuario || "";
+
+        document.getElementById("detalleFecha").innerText =
+            p.fechaEvento || "";
+
+        document.getElementById("detalleHora").innerText =
+            p.hora || "";
+
+        document.getElementById("detalleLugar").innerText =
+            p.lugar || "";
+
+        document.getElementById("detallePersonas").innerText =
+            p.personas || "";
+
+        document.getElementById("detalleTotal").innerText =
+            p.total || "";
+
+        document.getElementById("detalleDocumento").innerText =
+            p.numeroDocumento || "";
+
+        document.getElementById("detalleComentarios").value =
+            p.comentarios || "";
+
+        let productosHTML = "";
+
+        if (p.productos) {
+
+            p.productos.forEach(prod => {
+
+                productosHTML += `
+                    <p>
+                        • ${prod.nombre}
+                        &nbsp;&nbsp;
+                        x${prod.cantidad}
+                    </p>
+                `;
+
+            });
+
+        }
+
+        document.getElementById("detalleProductos").innerHTML =
+            productosHTML;
+
+        document.getElementById("modalPedido").style.display = "flex";
+
+    });
+
+});
+
+document.getElementById("cerrarPedido").onclick = () => {
+
+    document.getElementById("modalPedido").style.display = "none";
 
 };
 
