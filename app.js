@@ -2,7 +2,9 @@ import { db, auth } from "./firebase.js";
 
 import {
     collection,
-    getDocs
+    getDocs,
+    addDoc,
+    serverTimestamp
 } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 import {
     signOut
@@ -179,17 +181,75 @@ function documentoValido(){
 // BOTON
 // ============================
 
-btnEnviar.addEventListener("click",()=>{
+btnEnviar.addEventListener("click", async () => {
 
-    if(!documentoValido()){
+    if (!documentoValido()) {
 
-        document.getElementById("modal").style.display="flex";
+        document.getElementById("modal").style.display = "flex";
 
         return;
 
     }
 
-    alert("Pedido listo para guardar en Firebase.");
+    const listaProductos = [];
+
+    document.querySelectorAll(".producto").forEach(fila => {
+
+        const select = fila.querySelector(".productoSelect");
+        const cantidad = Number(fila.querySelector(".cantidad").value);
+
+        const producto = productos.find(p => p.nombre === select.options[select.selectedIndex].text);
+
+        listaProductos.push({
+
+            nombre: producto.nombre,
+            precio: producto.precio,
+            unidad: producto.unidad,
+            cantidad: cantidad
+
+        });
+
+    });
+
+    const pedido = {
+
+        fechaPedido: document.getElementById("fechaPedido").value,
+        fechaEvento: document.getElementById("fecha").value,
+        hora: document.getElementById("hora").value,
+        lugar: document.getElementById("lugar").value,
+        personas: Number(document.getElementById("personas").value),
+
+        productos: listaProductos,
+
+        total: totalHTML.innerText,
+
+        tipoDocumento: document.getElementById("tipoDocumento").value,
+        numeroDocumento: numeroDocumento.value,
+        comentarios: document.getElementById("comentarios").value,
+
+        usuario: auth.currentUser.email,
+
+        estado: "Pendiente",
+
+        fechaCreacion: serverTimestamp()
+
+    };
+
+    try {
+
+        await addDoc(collection(db, "pedidos"), pedido);
+
+        alert("Pedido enviado correctamente.");
+
+        location.reload();
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert("Error al guardar el pedido.");
+
+    }
 
 });
 
