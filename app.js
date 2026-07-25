@@ -235,25 +235,25 @@ btnEnviar.addEventListener("click", async () => {
 
     };
 
-    try {
+try {
 
-        const docRef = await addDoc(collection(db, "pedidos"), pedido);
+    console.log("Pedido a guardar:", pedido);
 
-        console.log("Pedido guardado con ID:", docRef.id);
+    const docRef = await addDoc(collection(db, "pedidos"), pedido);
 
-        alert("Pedido enviado correctamente.");
+    console.log("Pedido guardado con ID:", docRef.id);
 
-        location.reload();
+    alert("Pedido enviado correctamente.");
 
-    } catch (error) {
+    location.reload();
 
-        console.error(error);
+} catch (error) {
 
-        alert("Error al guardar el pedido.");
+    console.error("ERROR FIRESTORE:", error);
 
-    }
+    alert("Error al guardar el pedido.");
 
-});
+}
 
 // ============================
 // MODAL
