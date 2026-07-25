@@ -142,15 +142,67 @@ async function cargarProductos(){
 // PEDIDOS
 // ===============================
 
-function cargarPedidos(){
+async function cargarPedidos() {
 
-    contenido.innerHTML = `
+    const snapshot = await getDocs(collection(db, "pedidos"));
+
+    let html = `
 
         <h2>Pedidos</h2>
 
-        <p>No hay pedidos todavía.</p>
+        <table class="tablaProductos">
+
+            <thead>
+
+                <tr>
+
+                    <th>Fecha</th>
+                    <th>Usuario</th>
+                    <th>Lugar</th>
+                    <th>Total</th>
+                    <th>Estado</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
 
     `;
+
+    snapshot.forEach(doc => {
+
+        const p = doc.data();
+
+        html += `
+
+            <tr>
+
+                <td>${p.fechaEvento || "-"}</td>
+
+                <td>${p.usuario || "-"}</td>
+
+                <td>${p.lugar || "-"}</td>
+
+                <td>${p.total || "$0"}</td>
+
+                <td>${p.estado || "-"}</td>
+
+            </tr>
+
+        `;
+
+    });
+
+    html += `
+
+            </tbody>
+
+        </table>
+
+    `;
+
+    contenido.innerHTML = html;
 
 }
 
