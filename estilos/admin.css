@@ -297,3 +297,190 @@ body{
     background:#00467a;
 
 }
+/*==================================
+DASHBOARD PEDIDOS
+==================================*/
+
+.dashboard{
+
+    display:grid;
+
+    grid-template-columns:repeat(4,1fr);
+
+    gap:20px;
+
+    margin-bottom:25px;
+
+}
+
+.cardEstado{
+
+    color:white;
+
+    border-radius:12px;
+
+    padding:20px;
+
+    text-align:center;
+
+    box-shadow:0 4px 12px rgba(0,0,0,.15);
+
+}
+
+.cardEstado h3{
+
+    margin:0;
+
+    font-size:16px;
+
+    font-weight:500;
+
+}
+
+.cardEstado h1{
+
+    margin:10px 0 0;
+
+    font-size:38px;
+
+}
+
+.pendiente{
+
+    background:#f39c12;
+
+}
+
+.aprobado{
+
+    background:#27ae60;
+
+}
+
+.entregado{
+
+    background:#2980b9;
+
+}
+
+.rechazado{
+
+    background:#c0392b;
+
+}
+
+/*==================================
+BARRA
+==================================*/
+
+.barraPedidos{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    gap:20px;
+
+    margin-bottom:20px;
+
+}
+
+#buscarPedido{
+
+    flex:1;
+
+    padding:12px;
+
+    border:1px solid #d5d5d5;
+
+    border-radius:8px;
+
+    font-size:15px;
+
+}
+
+#filtroEstado{
+
+    width:220px;
+
+    padding:12px;
+
+    border-radius:8px;
+
+    border:1px solid #d5d5d5;
+
+}
+
+/*==================================
+ESTADOS
+==================================*/
+
+.estado{
+
+    padding:6px 14px;
+
+    border-radius:30px;
+
+    color:white;
+
+    font-weight:bold;
+
+    font-size:13px;
+
+}
+
+.estado.Pendiente{
+
+    background:#f39c12;
+
+}
+
+.estado.Aprobado{
+
+    background:#27ae60;
+
+}
+
+.estado.Entregado{
+
+    background:#2980b9;
+
+}
+
+.estado.Rechazado{
+
+    background:#c0392b;
+
+}
+
+/*==================================
+BOTON VER
+==================================*/
+
+.btnVerPedido{
+
+    border:none;
+
+    background:#005B9A;
+
+    color:white;
+
+    width:38px;
+
+    height:38px;
+
+    border-radius:8px;
+
+    cursor:pointer;
+
+    transition:.2s;
+
+}
+
+.btnVerPedido:hover{
+
+    transform:scale(1.08);
+
+    background:#00467a;
+
+}

@@ -15,6 +15,7 @@ import {
 
 const contenido = document.getElementById("contenido");
 let idProductoEditar = null;
+let pedidosCache = [];
 
 // ===============================
 // VERIFICAR SESIÓN
@@ -146,63 +147,151 @@ async function cargarPedidos() {
 
     const snapshot = await getDocs(collection(db, "pedidos"));
 
+    const pedidos = [];
+
+    snapshot.forEach(doc => {
+
+        pedidos.push({
+            id: doc.id,
+            ...doc.data()
+        });
+
+    });
+        pedidosCache = pedidos;
+
+    const pendientes = pedidos.filter(p => p.estado === "Pendiente").length;
+    const aprobados = pedidos.filter(p => p.estado === "Aprobado").length;
+    const entregados = pedidos.filter(p => p.estado === "Entregado").length;
+    const rechazados = pedidos.filter(p => p.estado === "Rechazado").length;
+
     let html = `
 
-        <h2>Pedidos</h2>
+    <div class="dashboard">
 
-        <table class="tablaProductos">
+<div
+    class="cardEstado pendiente"
+    data-estado="Pendiente"
+>
 
-            <thead>
+    <h3>Pendientes</h3>
 
-                <tr>
+    <h1>${pendientes}</h1>
 
-                    <th>Fecha</th>
-                    <th>Usuario</th>
-                    <th>Lugar</th>
-                    <th>Total</th>
-                    <th>Estado</th>
-                    <th></th>
+</div>
 
-                </tr>
+        <div
+    class="cardEstado aprobado"
+    data-estado="Aprobado"
+>
 
-            </thead>
+            <h3>Aprobados</h3>
 
-            <tbody>
+            <h1>${aprobados}</h1>
 
-    `;
+        </div>
 
-    snapshot.forEach(docPedido => {
+<div
+    class="cardEstado entregado"
+    data-estado="Entregado"
+>
 
-        const p = docPedido.data();
+            <h3>Entregados</h3>
 
-        html += `
+            <h1>${entregados}</h1>
+
+        </div>
+
+<div
+    class="cardEstado rechazado"
+    data-estado="Rechazado"
+>
+
+            <h3>Rechazados</h3>
+
+            <h1>${rechazados}</h1>
+
+        </div>
+
+    </div>
+
+    <div class="barraPedidos">
+
+        <input
+            id="buscarPedido"
+            placeholder="Buscar usuario o lugar..."
+        >
+
+        <select id="filtroEstado">
+
+            <option value="Todos">Todos</option>
+            <option>Pendiente</option>
+            <option>Aprobado</option>
+            <option>Entregado</option>
+            <option>Rechazado</option>
+
+        </select>
+
+    </div>
+
+    <table class="tablaProductos">
+
+        <thead>
 
             <tr>
 
-                <td>${p.fechaEvento || "-"}</td>
-
-                <td>${p.usuario || "-"}</td>
-
-                <td>${p.lugar || "-"}</td>
-
-                <td>${p.total || "$0"}</td>
-
-                <td>${p.estado || "-"}</td>
-
-                <td>
-
-                    <button
-                        class="btnVerPedido"
-                        data-id="${docPedido.id}"
-                    >
-
-                        👁 Ver
-
-                    </button>
-
-                </td>
+                <th>Fecha</th>
+                <th>Usuario</th>
+                <th>Lugar</th>
+                <th>Total</th>
+                <th>Estado</th>
+                <th></th>
 
             </tr>
+
+        </thead>
+
+        <tbody>
+
+    `;
+
+    pedidos.forEach(p => {
+
+        html += `
+
+        <tr>
+
+            <td>${p.fechaEvento || "-"}</td>
+
+            <td>${p.usuario || "-"}</td>
+
+            <td>${p.lugar || "-"}</td>
+
+            <td>${p.total || "-"}</td>
+
+            <td>
+
+                <span class="estado ${p.estado}">
+
+                    ${p.estado}
+
+                </span>
+
+            </td>
+
+            <td>
+
+                <button
+                    class="btnVerPedido"
+                    data-id="${p.id}"
+                >
+
+                    👁
+
+                </button>
+
+            </td>
+
+        </tr>
 
         `;
 
@@ -210,9 +299,9 @@ async function cargarPedidos() {
 
     html += `
 
-            </tbody>
+        </tbody>
 
-        </table>
+    </table>
 
     `;
 
@@ -418,6 +507,67 @@ document.getElementById("cerrarPedido").onclick = () => {
     document.getElementById("modalPedido").style.display = "none";
 
 };
+
+// ===============================
+// BUSCADOR Y FILTRO
+// ===============================
+
+document.addEventListener("input", (e) => {
+
+    if (e.target.id !== "buscarPedido") return;
+
+    filtrarPedidos();
+
+});
+
+document.addEventListener("change", (e) => {
+
+    if (e.target.id !== "filtroEstado") return;
+
+    filtrarPedidos();
+
+});
+
+function filtrarPedidos() {
+
+    const texto = document.getElementById("buscarPedido").value.toLowerCase();
+
+    const estado = document.getElementById("filtroEstado").value;
+
+    document.querySelectorAll(".tablaProductos tbody tr").forEach((fila, index) => {
+
+        const pedido = pedidosCache[index];
+
+        const coincideTexto =
+            (pedido.usuario || "").toLowerCase().includes(texto) ||
+            (pedido.lugar || "").toLowerCase().includes(texto);
+
+        const coincideEstado =
+            estado === "Todos" || pedido.estado === estado;
+
+        fila.style.display =
+            coincideTexto && coincideEstado ? "" : "none";
+
+    });
+
+}
+
+// ===============================
+// CLICK EN TARJETAS
+// ===============================
+
+document.addEventListener("click", (e) => {
+
+    const tarjeta = e.target.closest(".cardEstado");
+
+    if (!tarjeta) return;
+
+    document.getElementById("filtroEstado").value =
+        tarjeta.dataset.estado;
+
+    filtrarPedidos();
+
+});
 
 // ===============================
 // INICIO
