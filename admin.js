@@ -5,6 +5,7 @@ import {
     getDocs,
     getDoc,
     addDoc,
+    updateDoc,
     deleteDoc,
     doc,
     serverTimestamp,
@@ -358,86 +359,82 @@ document.addEventListener("click",(e)=>{
 });
 document.getElementById("guardarProducto").onclick = async () => {
 
-    const nombre = document.getElementById("nuevoNombre").value.trim();
+    try {
 
-    const precio = Number(document.getElementById("nuevoPrecio").value);
+        const nombre = document.getElementById("nuevoNombre").value.trim();
 
-    const unidad = document.getElementById("nuevaUnidad").value;
+        const precio = Number(document.getElementById("nuevoPrecio").value);
 
-    const activo = document.getElementById("nuevoEstado").value === "true";
+        const unidad = document.getElementById("nuevaUnidad").value;
 
-    if(nombre===""){
+        const activo =
+            document.getElementById("nuevoEstado").value === "true";
 
-        alert("Ingrese el nombre del producto.");
+        if (nombre === "") {
 
-        return;
+            alert("Ingrese el nombre del producto.");
 
-    }
-
-    if(precio<=0){
-
-        alert("Ingrese un precio válido.");
-
-        return;
-
-    }
-
-if(idProductoEditar){
-
-    await updateDoc(
-
-        doc(db,"productos",idProductoEditar),
-
-        {
-
-            nombre,
-
-            precio,
-
-            unidad,
-
-            activo
+            return;
 
         }
 
-    );
+        if (precio <= 0) {
 
-}
-else{
+            alert("Ingrese un precio válido.");
 
-    await addDoc(
-
-        collection(db,"productos"),
-
-        {
-
-            nombre,
-
-            precio,
-
-            unidad,
-
-            activo
+            return;
 
         }
 
-    );
+        if (idProductoEditar) {
 
-}
+            await updateDoc(
 
-idProductoEditar = null;
+                doc(db, "productos", idProductoEditar),
 
-    document.getElementById("modalProducto").style.display="none";
+                {
 
-    document.getElementById("nuevoNombre").value="";
+                    nombre,
+                    precio,
+                    unidad,
+                    activo
 
-    document.getElementById("nuevoPrecio").value="";
+                }
 
-    document.getElementById("nuevaUnidad").selectedIndex=0;
+            );
 
-    document.getElementById("nuevoEstado").selectedIndex=0;
+        } else {
 
-    cargarProductos();
+            await addDoc(
+
+                collection(db, "productos"),
+
+                {
+
+                    nombre,
+                    precio,
+                    unidad,
+                    activo
+
+                }
+
+            );
+
+        }
+
+        idProductoEditar = null;
+
+        document.getElementById("modalProducto").style.display = "none";
+
+        cargarProductos();
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert(error.message);
+
+    }
 
 };
 
