@@ -292,7 +292,13 @@ btnNuevoPedido.addEventListener("click", () => {
 
 });
 
-btnMisPedidos.addEventListener("click", cargarMisPedidos);
+btnMisPedidos.addEventListener("click", () => {
+
+    console.log("CLICK");
+
+    cargarMisPedidos();
+
+});
 
 async function cargarMisPedidos() {
 
