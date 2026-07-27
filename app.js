@@ -3,11 +3,14 @@ import { db, auth } from "./firebase.js";
 import {
     collection,
     getDocs,
+    getDoc,
     addDoc,
+    deleteDoc,
+    doc,
     serverTimestamp,
     query,
     where
-} from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+} from "...firebase-firestore.js";
 import {
     signOut
 } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
