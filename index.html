@@ -44,7 +44,7 @@
 
 </div>
 
-    <div class="card">
+    <div class="card" id="formularioPedido">
 
         <div class="fila">
 
@@ -221,6 +221,11 @@
 
 </div>
 
+<div
+    id="listaPedidos"
+    style="display:none;"
+></div>
+
 <!-- MODAL -->
 
 <div id="modal" class="modal">
@@ -283,6 +288,39 @@
             Cerrar
 
         </button>
+
+    </div>
+
+</div>
+<div id="modalEliminar" class="modal">
+
+    <div class="modal-contenido">
+
+        <h2>Eliminar pedido</h2>
+
+        <p>Ingrese la clave para confirmar.</p>
+
+        <input
+            type="password"
+            id="claveEliminar"
+            placeholder="Clave"
+        >
+
+        <div class="modal-botones">
+
+            <button id="cancelarEliminar">
+
+                Cancelar
+
+            </button>
+
+            <button id="confirmarEliminar">
+
+                Eliminar
+
+            </button>
+
+        </div>
 
     </div>
 

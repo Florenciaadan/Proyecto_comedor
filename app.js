@@ -10,7 +10,7 @@ import {
     serverTimestamp,
     query,
     where
-} from "...firebase-firestore.js";
+} from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 import {
     signOut
 } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
@@ -24,6 +24,7 @@ const btnMisPedidos = document.getElementById("btnMisPedidos");
 const btnNuevoPedido = document.getElementById("btnNuevoPedido");
 
 let productos = [];
+let pedidoEliminar = null;
 
 // ============================
 // FECHA DEL PEDIDO
@@ -291,7 +292,9 @@ btnSalir.addEventListener("click", async () => {
 
 btnNuevoPedido.addEventListener("click", () => {
 
-    window.location.href = "index.html";
+    listaPedidos.style.display = "none";
+
+    formularioPedido.style.display = "block";
 
 });
 
@@ -384,6 +387,13 @@ let html = `
     Ver detalle
 </button>
 
+<button
+    class="btnEliminarPedido"
+    data-id="${doc.id}"
+>
+    Eliminar
+</button>
+
         </div>
 
         `;
@@ -391,9 +401,36 @@ let html = `
     });
     html += "</div>";
 
-    document.querySelector(".contenedor").innerHTML = html;
+    formularioPedido.style.display = "none";
+
+listaPedidos.style.display = "block";
+
+listaPedidos.innerHTML = html;
 
 }
+// ============================
+// MODAL DETALLE
+// ============================
+
+const modalDetallePedido = document.getElementById("modalDetallePedido");
+
+const dFecha = document.getElementById("dFecha");
+const dHora = document.getElementById("dHora");
+const dLugar = document.getElementById("dLugar");
+const dPersonas = document.getElementById("dPersonas");
+const dProductos = document.getElementById("dProductos");
+const dTotal = document.getElementById("dTotal");
+const dDocumento = document.getElementById("dDocumento");
+const dEstado = document.getElementById("dEstado");
+const dComentarios = document.getElementById("dComentarios");
+const formularioPedido =
+    document.getElementById("formularioPedido");
+
+const listaPedidos =
+    document.getElementById("listaPedidos");
+
+const cerrarDetallePedido =
+    document.getElementById("cerrarDetallePedido");
 document.addEventListener("click", (e) => {
 
     if (!e.target.classList.contains("btnDetallePedido")) return;
@@ -433,5 +470,90 @@ document.addEventListener("click", (e) => {
 cerrarDetallePedido.onclick = () => {
 
     modalDetallePedido.style.display = "none";
+
+};
+
+// ============================
+// ELIMINAR PEDIDO
+// ============================
+
+const modalEliminar = document.getElementById("modalEliminar");
+const claveEliminar = document.getElementById("claveEliminar");
+const cancelarEliminar = document.getElementById("cancelarEliminar");
+const confirmarEliminar = document.getElementById("confirmarEliminar");
+
+document.addEventListener("click", (e) => {
+
+    if (!e.target.classList.contains("btnEliminarPedido")) return;
+
+    pedidoEliminar = e.target.dataset.id;
+
+    claveEliminar.value = "";
+
+    modalEliminar.style.display = "flex";
+
+});
+
+cancelarEliminar.onclick = () => {
+
+    modalEliminar.style.display = "none";
+
+    pedidoEliminar = null;
+
+};
+
+confirmarEliminar.onclick = async () => {
+
+    if (!pedidoEliminar) return;
+
+    try {
+
+        const configRef = doc(db, "configuracion", "seguridad");
+
+        const configSnap = await getDoc(configRef);
+
+        if (!configSnap.exists()) {
+
+            alert("No existe la configuración de seguridad.");
+
+            return;
+
+        }
+
+        const config = configSnap.data();
+
+        if (!config.permitirEliminarUsuario) {
+
+            alert("La eliminación de pedidos está deshabilitada.");
+
+            return;
+
+        }
+
+        if (claveEliminar.value !== config.claveEliminar) {
+
+            alert("Clave incorrecta.");
+
+            return;
+
+        }
+
+        await deleteDoc(doc(db, "pedidos", pedidoEliminar));
+
+        modalEliminar.style.display = "none";
+
+        pedidoEliminar = null;
+
+        alert("Pedido eliminado correctamente.");
+
+        cargarMisPedidos();
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert("Error al eliminar el pedido.");
+
+    }
 
 };
