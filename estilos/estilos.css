@@ -503,3 +503,118 @@ button:hover{
     background:#e7f0fa;
 
 }
+/*==================================
+MIS PEDIDOS
+==================================*/
+
+.listaPedidos{
+
+    max-width:1000px;
+
+    margin:30px auto;
+
+}
+
+.cardPedido{
+
+    background:white;
+
+    border-radius:12px;
+
+    padding:22px;
+
+    margin-bottom:18px;
+
+    box-shadow:0 4px 15px rgba(0,0,0,.10);
+
+    transition:.25s;
+
+}
+
+.cardPedido:hover{
+
+    transform:translateY(-2px);
+
+    box-shadow:0 8px 20px rgba(0,0,0,.18);
+
+}
+
+.cardCabecera{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:15px;
+
+}
+
+.cardPedido p{
+
+    margin:8px 0;
+
+}
+
+.btnDetallePedido{
+
+    margin-top:15px;
+
+    background:#005B9A;
+
+    color:white;
+
+    border:none;
+
+    padding:10px 18px;
+
+    border-radius:8px;
+
+    cursor:pointer;
+
+    font-size:14px;
+
+}
+
+.btnDetallePedido:hover{
+
+    background:#00467a;
+
+}
+
+.estado{
+
+    color:white;
+
+    font-weight:bold;
+
+    padding:6px 14px;
+
+    border-radius:30px;
+
+}
+
+.estado.Pendiente{
+
+    background:#f39c12;
+
+}
+
+.estado.Aprobado{
+
+    background:#27ae60;
+
+}
+
+.estado.Entregado{
+
+    background:#2980b9;
+
+}
+
+.estado.Rechazado{
+
+    background:#c0392b;
+
+}

@@ -306,11 +306,13 @@ async function cargarMisPedidos() {
 
     const snapshot = await getDocs(q);
 
-    let html = `
+let html = `
 
-        <h2>Mis pedidos</h2>
+<div class="listaPedidos">
 
-    `;
+    <h2>Mis pedidos</h2>
+
+`;
 
     if (snapshot.empty) {
 
@@ -366,21 +368,61 @@ async function cargarMisPedidos() {
 
             </p>
 
-            <button
-                class="btnDetallePedido"
-                data-id="${doc.id}"
-            >
-
-                Ver detalle
-
-            </button>
+<button
+    class="btnDetallePedido"
+    data-pedido='${JSON.stringify(p)}'
+>
+    Ver detalle
+</button>
 
         </div>
 
         `;
 
     });
+    html += "</div>";
 
     document.querySelector(".contenedor").innerHTML = html;
 
 }
+document.addEventListener("click", (e) => {
+
+    if (!e.target.classList.contains("btnDetallePedido")) return;
+
+    const p = JSON.parse(e.target.dataset.pedido);
+
+    dFecha.innerText = p.fechaEvento || "";
+    dHora.innerText = p.hora || "";
+    dLugar.innerText = p.lugar || "";
+    dPersonas.innerText = p.personas || "";
+    dTotal.innerText = p.total || "";
+    dDocumento.innerText = p.numeroDocumento || "";
+    dComentarios.value = p.comentarios || "";
+
+    dEstado.innerText = p.estado;
+    dEstado.className = "estado " + p.estado;
+
+    let html = "";
+
+    p.productos.forEach(prod => {
+
+        html += `
+            <p>
+                • ${prod.nombre}
+                &nbsp;&nbsp;x${prod.cantidad}
+            </p>
+        `;
+
+    });
+
+    dProductos.innerHTML = html;
+
+    modalDetallePedido.style.display = "flex";
+
+});
+
+cerrarDetallePedido.onclick = () => {
+
+    modalDetallePedido.style.display = "none";
+
+};
