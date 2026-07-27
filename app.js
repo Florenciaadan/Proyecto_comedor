@@ -4,7 +4,9 @@ import {
     collection,
     getDocs,
     addDoc,
-    serverTimestamp
+    serverTimestamp,
+    query,
+    where
 } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 import {
     signOut
@@ -290,8 +292,95 @@ btnNuevoPedido.addEventListener("click", () => {
 
 });
 
-btnMisPedidos.addEventListener("click", () => {
+btnMisPedidos.addEventListener("click", cargarMisPedidos);
 
-    alert("Próximamente se mostrarán los pedidos realizados.");
+async function cargarMisPedidos() {
 
-});
+    const q = query(
+
+        collection(db, "pedidos"),
+
+        where("usuario", "==", auth.currentUser.email)
+
+    );
+
+    const snapshot = await getDocs(q);
+
+    let html = `
+
+        <h2>Mis pedidos</h2>
+
+    `;
+
+    if (snapshot.empty) {
+
+        html += `
+
+            <p>No tenés pedidos realizados.</p>
+
+        `;
+
+    }
+
+    snapshot.forEach(doc => {
+
+        const p = doc.data();
+
+        html += `
+
+        <div class="cardPedido">
+
+            <div class="cardCabecera">
+
+                <strong>${p.fechaEvento}</strong>
+
+                <span class="estado ${p.estado}">
+
+                    ${p.estado}
+
+                </span>
+
+            </div>
+
+            <p>
+
+                <strong>Lugar:</strong>
+
+                ${p.lugar}
+
+            </p>
+
+            <p>
+
+                <strong>Personas:</strong>
+
+                ${p.personas}
+
+            </p>
+
+            <p>
+
+                <strong>Total:</strong>
+
+                ${p.total}
+
+            </p>
+
+            <button
+                class="btnDetallePedido"
+                data-id="${doc.id}"
+            >
+
+                Ver detalle
+
+            </button>
+
+        </div>
+
+        `;
+
+    });
+
+    document.querySelector(".contenedor").innerHTML = html;
+
+}
