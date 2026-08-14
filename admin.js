@@ -38,11 +38,8 @@ emailjs.init({
 const contenido = document.getElementById("contenido");
 
 let idProductoEditar = null;
-
 let pedidosCache = [];
-
 let productosCache = [];
-
 let pedidoActualId = null;
 
 
@@ -53,9 +50,7 @@ let pedidoActualId = null;
 onAuthStateChanged(auth, (user) => {
 
     if (!user) {
-
         window.location.href = "login.html";
-
     }
 
 });
@@ -65,35 +60,48 @@ onAuthStateChanged(auth, (user) => {
 // BOTONES PRINCIPALES
 // =====================================================
 
-document.getElementById("btnProductos").onclick = () => {
+const btnProductos = document.getElementById("btnProductos");
 
-    cargarProductos();
-
-};
-
-
-document.getElementById("btnPedidos").onclick = () => {
-
-    cargarPedidos();
-
-};
+if (btnProductos) {
+    btnProductos.onclick = () => {
+        cargarProductos();
+    };
+}
 
 
-document.getElementById("btnSalir").onclick = async () => {
+const btnPedidos = document.getElementById("btnPedidos");
 
-    try {
+if (btnPedidos) {
+    btnPedidos.onclick = () => {
+        cargarPedidos();
+    };
+}
 
-        await signOut(auth);
 
-        window.location.href = "login.html";
+const btnSalir = document.getElementById("btnSalir");
 
-    } catch (error) {
+if (btnSalir) {
 
-        console.error("Error cerrando sesión:", error);
+    btnSalir.onclick = async () => {
 
-    }
+        try {
 
-};
+            await signOut(auth);
+
+            window.location.href = "login.html";
+
+        } catch (error) {
+
+            console.error(
+                "Error cerrando sesión:",
+                error
+            );
+
+        }
+
+    };
+
+}
 
 
 // =====================================================
@@ -113,11 +121,8 @@ async function cargarProductos() {
         snapshot.forEach(docProducto => {
 
             productosCache.push({
-
                 id: docProducto.id,
-
                 ...docProducto.data()
-
             });
 
         });
@@ -271,11 +276,8 @@ async function cargarPedidos() {
         snapshot.forEach(docPedido => {
 
             pedidosCache.push({
-
                 id: docPedido.id,
-
                 ...docPedido.data()
-
             });
 
         });
@@ -314,7 +316,6 @@ function renderizarPedidos() {
 
 
     const futuros = [];
-
     const pasados = [];
 
 
@@ -534,7 +535,6 @@ function renderizarPedidos() {
                 false
             )}
 
-
             ${generarTablaPedidos(
                 pasados,
                 "Pedidos pasados",
@@ -648,9 +648,7 @@ function generarTablaPedidos(
 
 
         if (estado === "Aprobado") {
-
             textoEstado = "Aceptado";
-
         }
 
 
@@ -710,18 +708,22 @@ function generarTablaPedidos(
 
 
                 <td>
+
                     ${escapeHtml(
                         pedido.lugar || "-"
                     )}
+
                 </td>
 
 
                 <td>
+
                     $ ${
                         Number(
                             pedido.total || 0
                         ).toLocaleString("es-AR")
                     }
+
                 </td>
 
 
@@ -1632,6 +1634,7 @@ document.addEventListener(
                 error
             );
 
+
             alert(
                 "No se pudo abrir el pedido."
             );
@@ -1984,21 +1987,26 @@ function agregarFilaProductoPedido(
         selectProducto
     );
 
+
     fila.appendChild(
         inputCantidad
     );
+
 
     fila.appendChild(
         selectUnidad
     );
 
+
     fila.appendChild(
         spanPrecio
     );
 
+
     fila.appendChild(
         spanSubtotal
     );
+
 
     fila.appendChild(
         botonQuitar
@@ -2034,6 +2042,7 @@ function agregarFilaProductoPedido(
             selectProducto.value =
                 productoEncontrado.id;
 
+
             spanPrecio.innerText =
                 formatoMoneda(
                     productoEncontrado.precio
@@ -2063,8 +2072,10 @@ function agregarFilaProductoPedido(
                 spanPrecio.innerText =
                     "$ 0";
 
+
                 spanSubtotal.innerText =
                     "$ 0";
+
 
                 calcularTotalPedido();
 
@@ -2103,6 +2114,7 @@ function agregarFilaProductoPedido(
                 fila
             );
 
+
             calcularTotalPedido();
 
         }
@@ -2117,6 +2129,7 @@ function agregarFilaProductoPedido(
                 fila
             );
 
+
             calcularTotalPedido();
 
         }
@@ -2130,6 +2143,7 @@ function agregarFilaProductoPedido(
             calcularSubtotalFila(
                 fila
             );
+
 
             calcularTotalPedido();
 
@@ -2634,10 +2648,23 @@ async function enviarNotificacionEmail(
     total
 ) {
 
+    /*
+     * Buscamos primero pedido.email.
+     *
+     * Si el pedido viejo no tiene ese campo,
+     * usamos pedido.usuario siempre que tenga formato
+     * de correo electrónico.
+     */
+
     const email =
-        pedido.usuario ||
         pedido.email ||
-        "";
+        (
+            typeof pedido.usuario === "string" &&
+            pedido.usuario.includes("@")
+                ? pedido.usuario
+                : ""
+        );
+
 
     if (!email) {
 
@@ -2646,7 +2673,9 @@ async function enviarNotificacionEmail(
         );
 
         return;
+
     }
+
 
     const productosTexto =
         productos
@@ -2656,41 +2685,58 @@ async function enviarNotificacionEmail(
             )
             .join("\n");
 
+
     let asunto = "";
     let mensaje = "";
 
+
     if (estado === "Aprobado") {
 
-        asunto = "Tu pedido fue aceptado";
+        asunto =
+            "Tu pedido fue aceptado";
+
 
         mensaje =
             "Tu pedido fue aceptado por el comedor.";
 
-    } else if (estado === "Rechazado") {
+    }
 
-        asunto = "Tu pedido fue rechazado";
+    else if (estado === "Rechazado") {
+
+        asunto =
+            "Tu pedido fue rechazado";
+
 
         mensaje =
             "Tu pedido fue rechazado por el comedor.";
 
-    } else {
+    }
 
-        asunto = "Actualización de tu pedido";
+    else {
+
+        asunto =
+            "Actualización de tu pedido";
+
 
         mensaje =
             "Tu pedido fue actualizado por el comedor.";
 
     }
 
+
     const params = {
 
-        to_email: email,
+        to_email:
+            email,
 
-        asunto: asunto,
+        asunto:
+            asunto,
 
-        mensaje: mensaje,
+        mensaje:
+            mensaje,
 
-        usuario: email,
+        usuario:
+            email,
 
         fecha_evento:
             formatearFecha(
@@ -2716,14 +2762,25 @@ async function enviarNotificacionEmail(
             formatoMoneda(total),
 
         respuesta_comedor:
-            respuesta || "Sin comentarios."
+            respuesta ||
+            "Sin comentarios."
 
     };
+
 
     console.log(
         "Enviando respuesta al solicitante:",
         params
     );
+
+
+    /*
+     * IMPORTANTE:
+     * Este es el único envío que hacemos desde acá.
+     *
+     * Usamos el template:
+     * template_wrbm6sm
+     */
 
     await emailjs.send(
         EMAILJS_SERVICE_ID,
@@ -2732,24 +2789,6 @@ async function enviarNotificacionEmail(
     );
 
 }
-
-
-   
-
-
-    console.log(
-        "Enviando email con parámetros:",
-        params
-    );
-
-
-    await emailjs.send(
-        EMAILJS_SERVICE_ID,
-        EMAILJS_TEMPLATE_ID,
-        params
-    );
-
-
 
 
 // =====================================================
@@ -2875,19 +2914,31 @@ function escapeHtml(
 
 }
 
-function formatearFechaAsunto(fecha) {
+
+function formatearFechaAsunto(
+    fecha
+) {
 
     if (!fecha) {
         return "";
     }
 
-    const partes = fecha.split("-");
 
-    if (partes.length !== 3) {
+    const partes =
+        fecha.split("-");
+
+
+    if (
+        partes.length !== 3
+    ) {
+
         return fecha;
+
     }
 
+
     return `${partes[2]}-${partes[1]}-${partes[0]}`;
+
 }
 
 
