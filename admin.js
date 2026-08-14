@@ -2697,14 +2697,22 @@ async function enviarNotificacionEmail(
         personas:
             pedido.personas || "",
 
-        documento:
-            pedido.numeroDocumento || "",
+documento:
+    pedido.numeroDocumento || "",
 
-        numeroDocumento:
-            pedido.numeroDocumento || "",
+numeroDocumento:
+    pedido.numeroDocumento || "",
 
-        estado:
-            estadoTexto,
+numero_documento:
+    pedido.numeroDocumento || "",
+
+fecha_asunto:
+    formatearFechaAsunto(
+        pedido.fechaEvento
+    ),
+
+estado:
+    estadoTexto,
 
         respuesta:
             respuesta || "",
@@ -2862,6 +2870,21 @@ function escapeHtml(
             "&#039;"
         );
 
+}
+
+function formatearFechaAsunto(fecha) {
+
+    if (!fecha) {
+        return "";
+    }
+
+    const partes = fecha.split("-");
+
+    if (partes.length !== 3) {
+        return fecha;
+    }
+
+    return `${partes[2]}-${partes[1]}-${partes[0]}`;
 }
 
 
