@@ -2734,88 +2734,7 @@ async function enviarNotificacionEmail(
 }
 
 
-    const productosTexto =
-        productos
-            .map(
-                producto =>
-                    `• ${producto.nombre} x${producto.cantidad} (${producto.unidad}) - ${formatoMoneda(producto.subtotal)}`
-            )
-            .join("\n");
-
-
-    const estadoTexto =
-        estado === "Aprobado"
-            ? "ACEPTADO"
-            : estado === "Rechazado"
-                ? "RECHAZADO"
-                : estado;
-
-
-    const params = {
-
-        to_email:
-            email,
-
-        email:
-            email,
-
-        usuario:
-            email,
-
-        fechaEvento:
-            formatearFecha(
-                pedido.fechaEvento
-            ),
-
-        fecha_evento:
-            formatearFecha(
-                pedido.fechaEvento
-            ),
-
-        hora:
-            pedido.hora || "",
-
-        lugar:
-            pedido.lugar || "",
-
-        personas:
-            pedido.personas || "",
-
-documento:
-    pedido.numeroDocumento || "",
-
-numeroDocumento:
-    pedido.numeroDocumento || "",
-
-numero_documento:
-    pedido.numeroDocumento || "",
-
-fecha_asunto:
-    formatearFechaAsunto(
-        pedido.fechaEvento
-    ),
-
-estado:
-    estadoTexto,
-
-        respuesta:
-            respuesta || "",
-
-        respuestaComedor:
-            respuesta || "",
-
-        comentarios:
-            pedido.comentarios || "",
-
-        productos:
-            productosTexto,
-
-        total:
-            formatoMoneda(
-                total
-            )
-
-    };
+   
 
 
     console.log(
@@ -2830,7 +2749,7 @@ estado:
         params
     );
 
-}
+
 
 
 // =====================================================
