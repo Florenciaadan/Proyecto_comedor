@@ -2,14 +2,142 @@
 <html lang="es">
 
 <head>
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
     <title>Administración - Comedor</title>
-
     <link rel="stylesheet" href="estilos/admin.css">
 
+    <style>
+        .seccionCabecera {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .tablaCompacta {
+            border-collapse: collapse;
+        }
+
+        .tablaCompacta th,
+        .tablaCompacta td {
+            padding: 6px 9px !important;
+            line-height: 1.15;
+        }
+
+        .tablaCompacta button {
+            padding: 4px 8px;
+            min-width: 38px;
+        }
+
+        .nuevosPedidosBanner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            padding: 12px 16px;
+            margin: 10px 0 15px;
+            border-radius: 8px;
+            background: #eef4f8;
+            border: 1px solid #d6e2eb;
+        }
+
+        .nuevosPedidosBanner.hayNuevos {
+            border-color: #e2b400;
+            background: #fff8dc;
+        }
+
+        .nuevosPedidosBanner strong {
+            font-size: 18px;
+        }
+
+        .nuevosPedidosBanner span {
+            display: inline-block;
+            min-width: 26px;
+            margin-left: 8px;
+            padding: 3px 8px;
+            border-radius: 20px;
+            text-align: center;
+            background: #0b639d;
+            color: white;
+            font-weight: bold;
+        }
+
+        .badgeNuevo {
+            display: inline-block;
+            padding: 3px 7px;
+            border-radius: 12px;
+            background: #e9a900;
+            color: white;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .productoPedidoEditable {
+            display: grid;
+            grid-template-columns: minmax(180px, 1fr) 80px 80px 100px 110px 34px;
+            gap: 7px;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+
+        .productoPedidoEditable input,
+        .productoPedidoEditable select {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 5px 6px;
+        }
+
+        .productoPedidoEditable span {
+            font-size: 13px;
+            white-space: nowrap;
+        }
+
+        .btnQuitarProducto {
+            padding: 4px 7px;
+        }
+
+        .accionesPedido {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .campoPedido {
+            margin-bottom: 10px;
+        }
+
+        .campoPedido label {
+            display: block;
+            margin-bottom: 4px;
+            font-weight: bold;
+        }
+
+        .campoPedido textarea,
+        .campoPedido select {
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .error {
+            color: #b00020;
+            font-weight: bold;
+        }
+
+        @media (max-width: 700px) {
+            .productoPedidoEditable {
+                grid-template-columns: 1fr 70px 70px;
+            }
+
+            .productoPedidoEditable .precioProducto,
+            .productoPedidoEditable .subtotalProducto {
+                display: none;
+            }
+        }
+    </style>
 </head>
 
 <body>
@@ -17,37 +145,20 @@
 <div class="contenedor">
 
     <div class="cabecera">
-
         <h1>Administración - Servicio de Comedor</h1>
-
     </div>
 
     <div class="menu">
-
-        <button id="btnPedidos">
-
-            Pedidos
-
-        </button>
-
-        <button id="btnProductos">
-
-            Productos
-
-        </button>
-
-        <button id="btnSalir">
-
-            Cerrar sesión
-
-        </button>
-
+        <button id="btnPedidos">Pedidos</button>
+        <button id="btnProductos">Productos</button>
+        <button id="btnSalir">Cerrar sesión</button>
     </div>
 
     <div id="contenido"></div>
 
 </div>
-<!-- MODAL NUEVO PRODUCTO -->
+
+<!-- MODAL PRODUCTO -->
 
 <div id="modalProducto" class="modal">
 
@@ -56,70 +167,50 @@
         <h2>Nuevo producto</h2>
 
         <label>Producto</label>
-
         <input type="text" id="nuevoNombre">
 
         <label>Precio</label>
-
-        <input type="number" id="nuevoPrecio">
+        <input type="number" id="nuevoPrecio" min="0" step="0.01">
 
         <label>Unidad</label>
-
         <select id="nuevaUnidad">
-
             <option>Unidad</option>
+            <option>Kilo</option>
             <option>Docena</option>
             <option>Persona</option>
             <option>Bandeja</option>
             <option>Litro</option>
-
         </select>
 
         <label>Estado</label>
-
         <select id="nuevoEstado">
-
             <option value="true">Activo</option>
             <option value="false">Inactivo</option>
-
         </select>
 
         <div class="modal-botones">
-
-            <button id="cerrarProducto">
-
-                Cancelar
-
-            </button>
-
-            <button id="guardarProducto">
-
-                Guardar
-
-            </button>
-
+            <button id="cerrarProducto">Cancelar</button>
+            <button id="guardarProducto">Guardar</button>
         </div>
 
     </div>
 
 </div>
+
 <!-- MODAL PEDIDO -->
 
 <div id="modalPedido" class="modal">
 
-    <div class="modal-contenido">
+    <div class="modal-contenido" style="max-width:850px;">
 
-        <h2>Detalle del pedido</h2>
+        <h2>Revisar pedido</h2>
 
         <p><b>Usuario:</b> <span id="detalleUsuario"></span></p>
-
         <p><b>Fecha del evento:</b> <span id="detalleFecha"></span></p>
-
         <p><b>Horario:</b> <span id="detalleHora"></span></p>
-
         <p><b>Lugar:</b> <span id="detalleLugar"></span></p>
-
         <p><b>Personas:</b> <span id="detallePersonas"></span></p>
+        <p><b>OC / PD:</b> <span id="detalleDocumento"></span></p>
 
         <hr>
 
@@ -127,28 +218,56 @@
 
         <div id="detalleProductos"></div>
 
+        <button type="button" id="btnAgregarProductoPedido">
+            + Agregar producto
+        </button>
+
+        <p>
+            <b>Total modificado:</b>
+            <span id="detalleTotalEditar">$ 0</span>
+        </p>
+
         <hr>
 
-        <p><b>Total:</b> <span id="detalleTotal"></span></p>
+        <div class="campoPedido">
+            <label for="detalleEstado">Decisión del comedor</label>
 
-        <p><b>OC / PD:</b> <span id="detalleDocumento"></span></p>
+            <select id="detalleEstado">
+                <option value="Pendiente">Pendiente</option>
+                <option value="Aprobado">Aceptar pedido</option>
+                <option value="Rechazado">Rechazar pedido</option>
+                <option value="Entregado">Entregado</option>
+            </select>
+        </div>
 
-        <p><b>Comentarios:</b></p>
+        <div class="campoPedido">
+            <label for="detalleComentarios">
+                Comentarios originales / del pedido
+            </label>
 
-        <textarea
-            id="detalleComentarios"
-            rows="4"
-            readonly
-        ></textarea>
+            <textarea
+                id="detalleComentarios"
+                rows="3"
+            ></textarea>
+        </div>
 
-        <div class="modal-botones">
+        <div class="campoPedido">
+            <label for="detalleRespuesta">
+                Respuesta del comedor
+            </label>
 
-            <button id="cerrarPedido">
+            <textarea
+                id="detalleRespuesta"
+                rows="4"
+                placeholder="Ej: Podemos realizar el pedido, pero cambiamos 2 docenas por 24 unidades..."
+            ></textarea>
+        </div>
 
-                Cerrar
-
+        <div class="accionesPedido">
+            <button id="cerrarPedido">Cerrar</button>
+            <button id="guardarCambiosPedido">
+                Guardar y notificar
             </button>
-
         </div>
 
     </div>
@@ -158,5 +277,4 @@
 <script type="module" src="admin.js"></script>
 
 </body>
-
-</html>>
+</html>
