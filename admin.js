@@ -150,169 +150,846 @@ async function cargarProductos(){
 
 async function cargarPedidos() {
 
-    const snapshot = await getDocs(collection(db, "pedidos"));
+    const snapshot = await getDocs(
+        collection(db, "pedidos")
+    );
 
     const pedidos = [];
 
-    snapshot.forEach(doc => {
+    snapshot.forEach(docPedido => {
 
         pedidos.push({
-            id: doc.id,
-            ...doc.data()
+            id: docPedido.id,
+            ...docPedido.data()
         });
 
     });
-        pedidosCache = pedidos;
 
-    const pendientes = pedidos.filter(p => p.estado === "Pendiente").length;
-    const aprobados = pedidos.filter(p => p.estado === "Aprobado").length;
-    const entregados = pedidos.filter(p => p.estado === "Entregado").length;
-    const rechazados = pedidos.filter(p => p.estado === "Rechazado").length;
+    pedidosCache = pedidos;
+
+    renderizarPedidos();
+
+}
+
+
+// ===============================
+// RENDERIZAR PEDIDOS
+// ===============================
+
+function renderizarPedidos() {
+
+    const hoy = new Date();
+
+    hoy.setHours(0, 0, 0, 0);
+
+    const futuros = [];
+    const pasados = [];
+
+    pedidosCache.forEach(pedido => {
+
+        if (!pedido.fechaEvento) {
+
+            futuros.push(pedido);
+
+            return;
+
+        }
+
+        const fechaEvento =
+            new Date(pedido.fechaEvento + "T00:00:00");
+
+        if (fechaEvento < hoy) {
+
+            pasados.push(pedido);
+
+        } else {
+
+            futuros.push(pedido);
+
+        }
+
+    });
+
+
+    const pendientes =
+        futuros.filter(
+            p => p.estado === "Pendiente"
+        ).length;
+
+    const aceptados =
+        futuros.filter(
+            p =>
+                p.estado === "Aprobado" ||
+                p.estado === "Aceptado"
+        ).length;
+
+    const rechazados =
+        futuros.filter(
+            p => p.estado === "Rechazado"
+        ).length;
+
 
     let html = `
 
-    <div class="dashboard">
+        <div class="cabeceraPedidos">
 
-<div
-    class="cardEstado pendiente"
-    data-estado="Pendiente"
->
+            <div>
 
-    <h3>Pendientes</h3>
+                <h2>Pedidos</h2>
 
-    <h1>${pendientes}</h1>
+                <p class="subtituloPedidos">
+                    Gestioná los pedidos del comedor
+                </p>
 
-</div>
+            </div>
 
-        <div
-    class="cardEstado aprobado"
-    data-estado="Aprobado"
->
-
-            <h3>Aprobados</h3>
-
-            <h1>${aprobados}</h1>
+            <button
+                id="btnEliminarSeleccionados"
+                class="btnEliminarSeleccionados"
+                disabled
+            >
+                🗑 Eliminar seleccionados
+            </button>
 
         </div>
 
-<div
-    class="cardEstado entregado"
-    data-estado="Entregado"
->
 
-            <h3>Entregados</h3>
+        <div class="dashboard">
 
-            <h1>${entregados}</h1>
+            <div
+                class="cardEstado pendiente"
+                data-estado="Pendiente"
+            >
+
+                <h3>Pendientes</h3>
+
+                <h1>${pendientes}</h1>
+
+            </div>
+
+
+            <div
+                class="cardEstado aprobado"
+                data-estado="Aprobado"
+            >
+
+                <h3>Aceptados</h3>
+
+                <h1>${aceptados}</h1>
+
+            </div>
+
+
+            <div
+                class="cardEstado rechazado"
+                data-estado="Rechazado"
+            >
+
+                <h3>Rechazados</h3>
+
+                <h1>${rechazados}</h1>
+
+            </div>
+
+
+            <div
+                class="cardEstado pasado"
+                data-estado="Pasados"
+            >
+
+                <h3>Pasados</h3>
+
+                <h1>${pasados.length}</h1>
+
+            </div>
 
         </div>
 
-<div
-    class="cardEstado rechazado"
-    data-estado="Rechazado"
->
 
-            <h3>Rechazados</h3>
+        <div class="barraPedidos">
 
-            <h1>${rechazados}</h1>
+            <input
+                id="buscarPedido"
+                placeholder="Buscar usuario o lugar..."
+            >
+
+            <select id="filtroEstado">
+
+                <option value="Todos">
+                    Todos los futuros
+                </option>
+
+                <option value="Pendiente">
+                    Pendientes
+                </option>
+
+                <option value="Aprobado">
+                    Aceptados
+                </option>
+
+                <option value="Rechazado">
+                    Rechazados
+                </option>
+
+                <option value="Pasados">
+                    Pedidos pasados
+                </option>
+
+            </select>
 
         </div>
 
-    </div>
 
-    <div class="barraPedidos">
+        <div class="seleccionPedidos">
 
-        <input
-            id="buscarPedido"
-            placeholder="Buscar usuario o lugar..."
-        >
+            <label>
 
-        <select id="filtroEstado">
+                <input
+                    type="checkbox"
+                    id="seleccionarTodos"
+                >
 
-            <option value="Todos">Todos</option>
-            <option>Pendiente</option>
-            <option>Aprobado</option>
-            <option>Entregado</option>
-            <option>Rechazado</option>
+                Seleccionar todos
 
-        </select>
+            </label>
 
-    </div>
+            <span id="cantidadSeleccionados">
+                0 seleccionados
+            </span>
 
-    <table class="tablaProductos">
+        </div>
 
-        <thead>
 
-            <tr>
+        <div id="contenedorPedidos">
 
-                <th>Fecha</th>
-                <th>Usuario</th>
-                <th>Lugar</th>
-                <th>Total</th>
-                <th>Estado</th>
-                <th></th>
+            ${generarTablaPedidos(
+                futuros,
+                "Pedidos futuros"
+            )}
 
-            </tr>
+            ${generarTablaPedidos(
+                pasados,
+                "Pedidos pasados",
+                true
+            )}
 
-        </thead>
-
-        <tbody>
+        </div>
 
     `;
 
-    pedidos.forEach(p => {
+
+    contenido.innerHTML = html;
+
+    actualizarBotonEliminar();
+
+}
+
+
+// ===============================
+// GENERAR TABLA
+// ===============================
+
+function generarTablaPedidos(
+    pedidos,
+    titulo,
+    esPasados = false
+) {
+
+    let html = `
+
+        <section
+            class="seccionPedidos ${esPasados ? "seccionPasados" : ""}"
+            data-seccion="${esPasados ? "Pasados" : "Futuros"}"
+        >
+
+            <div class="tituloSeccionPedidos">
+
+                <div>
+
+                    <h2>${titulo}</h2>
+
+                    <span>
+                        ${pedidos.length}
+                        pedido${pedidos.length === 1 ? "" : "s"}
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="tablaScroll">
+
+                <table class="tablaProductos">
+
+                    <thead>
+
+                        <tr>
+
+                            <th class="colSeleccion">
+
+                                <span>✓</span>
+
+                            </th>
+
+                            <th>Fecha</th>
+
+                            <th>Usuario</th>
+
+                            <th>Lugar</th>
+
+                            <th>Total</th>
+
+                            <th>Estado</th>
+
+                            <th></th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+    `;
+
+
+    if (pedidos.length === 0) {
 
         html += `
 
-        <tr>
+            <tr>
 
-            <td>${p.fechaEvento || "-"}</td>
-
-            <td>${p.usuario || "-"}</td>
-
-            <td>${p.lugar || "-"}</td>
-
-            <td>${p.total || "-"}</td>
-
-            <td>
-
-                <span class="estado ${p.estado}">
-
-                    ${p.estado}
-
-                </span>
-
-            </td>
-
-            <td>
-
-                <button
-                    class="btnVerPedido"
-                    data-id="${p.id}"
+                <td
+                    colspan="7"
+                    class="sinPedidos"
                 >
 
-                    👁
+                    No hay pedidos en esta sección.
 
-                </button>
+                </td>
 
-            </td>
+            </tr>
 
-        </tr>
+        `;
+
+    }
+
+
+    pedidos.forEach(pedido => {
+
+        let estado =
+            pedido.estado || "Pendiente";
+
+        if (estado === "Aprobado") {
+            estado = "Aceptado";
+        }
+
+
+        html += `
+
+            <tr
+                class="filaPedido"
+                data-id="${pedido.id}"
+                data-estado-original="${pedido.estado || "Pendiente"}"
+                data-pasado="${esPasados}"
+            >
+
+                <td class="colSeleccion">
+
+                    <input
+                        type="checkbox"
+                        class="checkPedido"
+                        data-id="${pedido.id}"
+                    >
+
+                </td>
+
+
+                <td>
+
+                    ${pedido.fechaEvento || "-"}
+
+                </td>
+
+
+                <td>
+
+                    ${pedido.usuario || "-"}
+
+                </td>
+
+
+                <td>
+
+                    ${pedido.lugar || "-"}
+
+                </td>
+
+
+                <td>
+
+                    ${pedido.total || "-"}
+
+                </td>
+
+
+                <td>
+
+                    <span
+                        class="estado ${pedido.estado || "Pendiente"}"
+                    >
+
+                        ${estado}
+
+                    </span>
+
+                </td>
+
+
+                <td>
+
+                    <button
+                        class="btnVerPedido"
+                        data-id="${pedido.id}"
+                        title="Ver pedido"
+                    >
+
+                        👁
+
+                    </button>
+
+                </td>
+
+            </tr>
 
         `;
 
     });
 
+
     html += `
 
-        </tbody>
+                    </tbody>
 
-    </table>
+                </table>
+
+            </div>
+
+        </section>
 
     `;
 
-    contenido.innerHTML = html;
+
+    return html;
 
 }
+
+
+// ===============================
+// ACTUALIZAR BOTON ELIMINAR
+// ===============================
+
+function actualizarBotonEliminar() {
+
+    const checks =
+        document.querySelectorAll(
+            ".checkPedido:checked"
+        );
+
+    const boton =
+        document.getElementById(
+            "btnEliminarSeleccionados"
+        );
+
+    const contador =
+        document.getElementById(
+            "cantidadSeleccionados"
+        );
+
+
+    const cantidad =
+        checks.length;
+
+
+    if (boton) {
+
+        boton.disabled =
+            cantidad === 0;
+
+    }
+
+
+    if (contador) {
+
+        contador.innerText =
+            cantidad +
+            (
+                cantidad === 1
+                    ? " seleccionado"
+                    : " seleccionados"
+            );
+
+    }
+
+}
+
+
+// ===============================
+// SELECCIONAR PEDIDOS
+// ===============================
+
+document.addEventListener(
+    "change",
+    e => {
+
+        if (
+            e.target.classList.contains(
+                "checkPedido"
+            )
+        ) {
+
+            actualizarBotonEliminar();
+
+        }
+
+
+        if (
+            e.target.id ===
+            "seleccionarTodos"
+        ) {
+
+            const checks =
+                document.querySelectorAll(
+                    ".checkPedido"
+                );
+
+
+            checks.forEach(check => {
+
+                check.checked =
+                    e.target.checked;
+
+            });
+
+
+            actualizarBotonEliminar();
+
+        }
+
+
+        if (
+            e.target.id ===
+            "filtroEstado"
+        ) {
+
+            filtrarPedidos();
+
+        }
+
+    }
+);
+
+
+// ===============================
+// ELIMINAR SELECCIONADOS
+// ===============================
+
+document.addEventListener(
+    "click",
+    async e => {
+
+        if (
+            !e.target.closest(
+                "#btnEliminarSeleccionados"
+            )
+        ) {
+            return;
+        }
+
+
+        const seleccionados =
+            Array.from(
+                document.querySelectorAll(
+                    ".checkPedido:checked"
+                )
+            ).map(
+                check =>
+                    check.dataset.id
+            );
+
+
+        if (
+            seleccionados.length === 0
+        ) {
+
+            return;
+
+        }
+
+
+        const confirmar =
+            confirm(
+                `¿Está seguro de eliminar ${seleccionados.length} pedido${seleccionados.length === 1 ? "" : "s"}?\n\nEsta acción no se puede deshacer.`
+            );
+
+
+        if (!confirmar) {
+
+            return;
+
+        }
+
+
+        try {
+
+            for (
+                const id of seleccionados
+            ) {
+
+                await deleteDoc(
+                    doc(
+                        db,
+                        "pedidos",
+                        id
+                    )
+                );
+
+            }
+
+
+            alert(
+                "Los pedidos seleccionados fueron eliminados."
+            );
+
+
+            await cargarPedidos();
+
+
+        } catch (error) {
+
+            console.error(
+                "Error eliminando pedidos:",
+                error
+            );
+
+
+            alert(
+                "Ocurrió un error al eliminar los pedidos."
+            );
+
+        }
+
+    }
+);
+
+
+// ===============================
+// BUSCADOR
+// ===============================
+
+document.addEventListener(
+    "input",
+    e => {
+
+        if (
+            e.target.id !==
+            "buscarPedido"
+        ) {
+
+            return;
+
+        }
+
+
+        filtrarPedidos();
+
+    }
+);
+
+
+// ===============================
+// FILTRAR PEDIDOS
+// ===============================
+
+function filtrarPedidos() {
+
+    const input =
+        document.getElementById(
+            "buscarPedido"
+        );
+
+    const select =
+        document.getElementById(
+            "filtroEstado"
+        );
+
+
+    if (!input || !select) {
+        return;
+    }
+
+
+    const texto =
+        input.value
+            .toLowerCase()
+            .trim();
+
+
+    const filtro =
+        select.value;
+
+
+    document
+        .querySelectorAll(
+            ".filaPedido"
+        )
+        .forEach(fila => {
+
+
+            const id =
+                fila.dataset.id;
+
+
+            const pedido =
+                pedidosCache.find(
+                    p => p.id === id
+                );
+
+
+            if (!pedido) {
+                return;
+            }
+
+
+            const esPasado =
+                fila.dataset.pasado === "true";
+
+
+            const coincideTexto =
+                (pedido.usuario || "")
+                    .toLowerCase()
+                    .includes(texto)
+
+                ||
+
+                (pedido.lugar || "")
+                    .toLowerCase()
+                    .includes(texto);
+
+
+            let coincideFiltro = true;
+
+
+            if (filtro === "Pasados") {
+
+                coincideFiltro =
+                    esPasado;
+
+            }
+
+            else if (filtro === "Todos") {
+
+                coincideFiltro =
+                    !esPasado;
+
+            }
+
+            else {
+
+                coincideFiltro =
+                    !esPasado &&
+                    (
+                        pedido.estado ===
+                            filtro
+                        ||
+
+                        (
+                            filtro === "Aprobado" &&
+                            pedido.estado === "Aceptado"
+                        )
+                    );
+
+            }
+
+
+            fila.style.display =
+                coincideTexto &&
+                coincideFiltro
+                    ? ""
+                    : "none";
+
+        });
+
+
+    // Mostrar/ocultar secciones
+    document
+        .querySelectorAll(
+            ".seccionPedidos"
+        )
+        .forEach(seccion => {
+
+            const filas =
+                seccion.querySelectorAll(
+                    ".filaPedido"
+                );
+
+
+            const hayVisible =
+                Array.from(filas)
+                    .some(
+                        fila =>
+                            fila.style.display !==
+                            "none"
+                    );
+
+
+            seccion.style.display =
+                hayVisible
+                    ? ""
+                    : "none";
+
+        });
+
+}
+
+
+// ===============================
+// CLICK EN TARJETAS
+// ===============================
+
+document.addEventListener(
+    "click",
+    e => {
+
+        const tarjeta =
+            e.target.closest(
+                ".cardEstado"
+            );
+
+
+        if (!tarjeta) {
+            return;
+        }
+
+
+        const filtro =
+            document.getElementById(
+                "filtroEstado"
+            );
+
+
+        if (!filtro) {
+            return;
+        }
+
+
+        filtro.value =
+            tarjeta.dataset.estado;
+
+
+        filtrarPedidos();
+
+    }
+);
 
 // ===============================
 // MODAL
