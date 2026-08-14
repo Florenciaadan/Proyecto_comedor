@@ -1,5 +1,11 @@
 import { db, auth } from "./firebase.js";
 
+import emailjs from "https://cdn.jsdelivr.net/npm/@emailjs/browser@4/+esm";
+
+emailjs.init({
+    publicKey: "bUNcS8Ra993mmhOA0"
+});
+
 import {
     collection,
     getDocs,
@@ -9,14 +15,17 @@ import {
     doc,
     serverTimestamp,
     query,
-    where,
-    updateDoc
+    where
 } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
 import {
     signOut
 } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
+
+// ======================================================
+// ELEMENTOS
+// ======================================================
 
 const contenedor = document.getElementById("productos");
 const numeroDocumento = document.getElementById("numeroDocumento");
@@ -56,15 +65,18 @@ async function cargarProductos() {
     try {
 
         const querySnapshot =
-            await getDocs(collection(db, "productos"));
+            await getDocs(
+                collection(db, "productos")
+            );
 
         productos = [];
 
         querySnapshot.forEach(docProducto => {
 
-            const producto = docProducto.data();
+            const producto =
+                docProducto.data();
 
-            // Solamente mostrar productos activos
+            // Mostrar solamente productos activos
             if (producto.activo !== false) {
 
                 productos.push(producto);
@@ -73,7 +85,7 @@ async function cargarProductos() {
 
         });
 
-        // Si ya hay filas, no agregamos otra automáticamente
+        // Agregar una fila solamente si no existe ninguna
         if (
             contenedor &&
             document.querySelectorAll(".producto").length === 0
@@ -85,9 +97,14 @@ async function cargarProductos() {
 
     } catch (error) {
 
-        console.error("Error cargando productos:", error);
+        console.error(
+            "Error cargando productos:",
+            error
+        );
 
-        alert("No se pudieron cargar los productos.");
+        alert(
+            "No se pudieron cargar los productos."
+        );
 
     }
 
@@ -102,11 +119,15 @@ cargarProductos();
 
 function agregarFila() {
 
-    if (!contenedor) return;
+    if (!contenedor) {
+        return;
+    }
 
     if (productos.length === 0) {
 
-        alert("No hay productos activos disponibles.");
+        alert(
+            "No hay productos activos disponibles."
+        );
 
         return;
 
@@ -114,29 +135,23 @@ function agregarFila() {
 
     let opciones = "";
 
-    productos.forEach((p, index) => {
+    productos.forEach((producto, index) => {
 
         opciones += `
-            <option
-                value="${index}"
-            >
-                ${escapeHtml(p.nombre)}
+            <option value="${index}">
+                ${escapeHtml(producto.nombre)}
             </option>
         `;
 
     });
 
-
     contenedor.insertAdjacentHTML(
         "beforeend",
         `
-
         <div class="producto">
 
             <select class="productoSelect">
-
                 ${opciones}
-
             </select>
 
             <input
@@ -147,13 +162,10 @@ function agregarFila() {
             >
 
             <span class="costoFila">
-
                 $0
-
             </span>
 
         </div>
-
         `
     );
 
@@ -161,13 +173,13 @@ function agregarFila() {
 
 }
 
-
 window.agregarFila = agregarFila;
 
 
 const btnAgregarProducto =
-    document.getElementById("btnAgregarProducto");
-
+    document.getElementById(
+        "btnAgregarProducto"
+    );
 
 if (btnAgregarProducto) {
 
@@ -196,7 +208,9 @@ document.addEventListener(
 
 function calcularTotal() {
 
-    if (!totalHTML) return;
+    if (!totalHTML) {
+        return;
+    }
 
     let total = 0;
 
@@ -205,19 +219,26 @@ function calcularTotal() {
         .forEach(fila => {
 
             const select =
-                fila.querySelector(".productoSelect");
+                fila.querySelector(
+                    ".productoSelect"
+                );
 
             const cantidadInput =
-                fila.querySelector(".cantidad");
+                fila.querySelector(
+                    ".cantidad"
+                );
 
             const costoFila =
-                fila.querySelector(".costoFila");
+                fila.querySelector(
+                    ".costoFila"
+                );
 
-
-            if (!select || !cantidadInput) {
+            if (
+                !select ||
+                !cantidadInput
+            ) {
                 return;
             }
-
 
             const indice =
                 Number(select.value);
@@ -225,11 +246,9 @@ function calcularTotal() {
             const producto =
                 productos[indice];
 
-
             if (!producto) {
                 return;
             }
-
 
             const precio =
                 Number(producto.precio) || 0;
@@ -237,28 +256,28 @@ function calcularTotal() {
             const cantidad =
                 Number(cantidadInput.value) || 0;
 
-
             const costo =
                 precio * cantidad;
-
 
             if (costoFila) {
 
                 costoFila.innerHTML =
                     "$" +
-                    costo.toLocaleString("es-AR");
+                    costo.toLocaleString(
+                        "es-AR"
+                    );
 
             }
-
 
             total += costo;
 
         });
 
-
     totalHTML.innerHTML =
         "$" +
-        total.toLocaleString("es-AR");
+        total.toLocaleString(
+            "es-AR"
+        );
 
 }
 
@@ -278,7 +297,6 @@ if (numeroDocumento) {
                     /\D/g,
                     ""
                 );
-
 
             if (
                 numeroDocumento.value.length > 10
@@ -311,7 +329,6 @@ function documentoValido() {
     const n =
         numeroDocumento.value;
 
-
     return (
 
         (
@@ -341,18 +358,22 @@ if (btnEnviar) {
         "click",
         async () => {
 
-
-            // -------------------------------
+            // ------------------------------------------
             // VALIDAR DOCUMENTO
-            // -------------------------------
+            // ------------------------------------------
 
             if (!documentoValido()) {
 
                 const modal =
-                    document.getElementById("modal");
+                    document.getElementById(
+                        "modal"
+                    );
 
                 if (modal) {
-                    modal.style.display = "flex";
+
+                    modal.style.display =
+                        "flex";
+
                 }
 
                 return;
@@ -360,9 +381,9 @@ if (btnEnviar) {
             }
 
 
-            // -------------------------------
+            // ------------------------------------------
             // VALIDAR SESION
-            // -------------------------------
+            // ------------------------------------------
 
             if (!auth.currentUser) {
 
@@ -375,58 +396,50 @@ if (btnEnviar) {
             }
 
 
-            // -------------------------------
-            // ARMAR PRODUCTOS
-            // -------------------------------
+            // ------------------------------------------
+            // ARMAR LISTA DE PRODUCTOS
+            // ------------------------------------------
 
             const listaProductos = [];
-
 
             document
                 .querySelectorAll(".producto")
                 .forEach(fila => {
-
 
                     const select =
                         fila.querySelector(
                             ".productoSelect"
                         );
 
-
                     const cantidadInput =
                         fila.querySelector(
                             ".cantidad"
                         );
 
-
-                    if (!select || !cantidadInput) {
+                    if (
+                        !select ||
+                        !cantidadInput
+                    ) {
                         return;
                     }
 
-
                     const indice =
                         Number(select.value);
-
 
                     const cantidad =
                         Number(
                             cantidadInput.value
                         );
 
-
                     const producto =
                         productos[indice];
-
 
                     if (
                         !producto ||
                         cantidad <= 0
                     ) {
-
                         return;
-
                     }
-
 
                     listaProductos.push({
 
@@ -434,10 +447,13 @@ if (btnEnviar) {
                             producto.nombre,
 
                         precio:
-                            Number(producto.precio) || 0,
+                            Number(
+                                producto.precio
+                            ) || 0,
 
                         unidad:
-                            producto.unidad || "Unidad",
+                            producto.unidad ||
+                            "Unidad",
 
                         cantidad:
                             cantidad
@@ -447,7 +463,9 @@ if (btnEnviar) {
                 });
 
 
-            if (listaProductos.length === 0) {
+            if (
+                listaProductos.length === 0
+            ) {
 
                 alert(
                     "Agregá al menos un producto con cantidad mayor a 0."
@@ -458,9 +476,9 @@ if (btnEnviar) {
             }
 
 
-            // -------------------------------
+            // ------------------------------------------
             // DATOS DEL PEDIDO
-            // -------------------------------
+            // ------------------------------------------
 
             const pedido = {
 
@@ -469,24 +487,20 @@ if (btnEnviar) {
                         "fechaPedido"
                     )?.value || "",
 
-
                 fechaEvento:
                     document.getElementById(
                         "fecha"
                     )?.value || "",
-
 
                 hora:
                     document.getElementById(
                         "hora"
                     )?.value || "",
 
-
                 lugar:
                     document.getElementById(
                         "lugar"
                     )?.value || "",
-
 
                 personas:
                     Number(
@@ -495,50 +509,40 @@ if (btnEnviar) {
                         )?.value
                     ) || 0,
 
-
                 productos:
                     listaProductos,
-
 
                 total:
                     totalHTML
                         ? totalHTML.innerText
                         : "$0",
 
-
                 tipoDocumento:
                     document.getElementById(
                         "tipoDocumento"
                     )?.value || "",
 
-
                 numeroDocumento:
                     numeroDocumento.value,
-
 
                 comentarios:
                     document.getElementById(
                         "comentarios"
                     )?.value || "",
 
-
                 usuario:
                     auth.currentUser.email,
-
 
                 estado:
                     "Pendiente",
 
-
-                // Nuevo pedido = todavía no visto
+                // El comedor todavía no vio este pedido
                 vistoPorComedor:
                     false,
-
 
                 // Respuesta del comedor
                 respuestaComedor:
                     "",
-
 
                 fechaCreacion:
                     serverTimestamp()
@@ -546,9 +550,9 @@ if (btnEnviar) {
             };
 
 
-            // -------------------------------
-            // GUARDAR
-            // -------------------------------
+            // ------------------------------------------
+            // GUARDAR EN FIRESTORE
+            // ------------------------------------------
 
             try {
 
@@ -556,7 +560,6 @@ if (btnEnviar) {
                     "Pedido a guardar:",
                     pedido
                 );
-
 
                 const docRef =
                     await addDoc(
@@ -567,19 +570,114 @@ if (btnEnviar) {
                         pedido
                     );
 
-
                 console.log(
                     "Pedido guardado con ID:",
                     docRef.id
                 );
 
 
-                alert(
-                    "Pedido enviado correctamente."
-                );
+                // --------------------------------------
+                // ENVIAR EMAIL AL COMEDOR
+                // --------------------------------------
+
+                try {
+
+                    const productosTexto =
+                        listaProductos
+                            .map(prod => {
+
+                                const subtotal =
+                                    Number(prod.precio) *
+                                    Number(prod.cantidad);
+
+                                return (
+                                    `${prod.nombre} x${prod.cantidad}` +
+                                    ` (${prod.unidad})` +
+                                    ` - $${subtotal.toLocaleString("es-AR")}`
+                                );
+
+                            })
+                            .join("\n");
 
 
-                location.reload();
+                    await emailjs.send(
+                        "service_comedorlasa",
+                        "template_9w3ugxt",
+                        {
+
+                            usuario:
+                                pedido.usuario,
+
+                            fecha_evento:
+                                pedido.fechaEvento ||
+                                "-",
+
+                            hora:
+                                pedido.hora ||
+                                "-",
+
+                            lugar:
+                                pedido.lugar ||
+                                "-",
+
+                            personas:
+                                pedido.personas ||
+                                "-",
+
+                            tipo_documento:
+                                pedido.tipoDocumento ||
+                                "-",
+
+                            numero_documento:
+                                pedido.numeroDocumento ||
+                                "-",
+
+                            productos:
+                                productosTexto ||
+                                "-",
+
+                            total:
+                                pedido.total ||
+                                "$0",
+
+                            comentarios:
+                                pedido.comentarios ||
+                                "-"
+
+                        }
+                    );
+
+
+                    console.log(
+                        "Email enviado correctamente."
+                    );
+
+
+                    alert(
+                        "Pedido enviado correctamente."
+                    );
+
+
+                    location.reload();
+
+
+                } catch (emailError) {
+
+                    // El pedido YA fue guardado.
+                    // Si falla EmailJS no debemos decir
+                    // que falló el pedido.
+
+                    console.error(
+                        "Error enviando email:",
+                        emailError
+                    );
+
+                    alert(
+                        "El pedido se guardó correctamente, " +
+                        "pero no se pudo enviar el aviso por email."
+                    );
+
+                }
 
 
             } catch (error) {
@@ -588,7 +686,6 @@ if (btnEnviar) {
                     "ERROR FIRESTORE:",
                     error
                 );
-
 
                 alert(
                     "Error al guardar el pedido."
@@ -611,7 +708,6 @@ const cerrarModal =
         "cerrarModal"
     );
 
-
 if (cerrarModal) {
 
     cerrarModal.addEventListener(
@@ -622,7 +718,6 @@ if (cerrarModal) {
                 document.getElementById(
                     "modal"
                 );
-
 
             if (modal) {
 
@@ -678,7 +773,6 @@ const formularioPedido =
         "formularioPedido"
     );
 
-
 const listaPedidos =
     document.getElementById(
         "listaPedidos"
@@ -701,7 +795,6 @@ if (btnNuevoPedido) {
                     "none";
 
             }
-
 
             if (formularioPedido) {
 
@@ -750,11 +843,9 @@ async function cargarMisPedidos() {
 
     }
 
-
     if (!listaPedidos) {
         return;
     }
-
 
     try {
 
@@ -764,6 +855,7 @@ async function cargarMisPedidos() {
                     db,
                     "pedidos"
                 ),
+
                 where(
                     "usuario",
                     "==",
@@ -838,9 +930,9 @@ async function cargarMisPedidos() {
         pedidos.forEach(
             p => {
 
-
                 const estado =
-                    p.estado || "Pendiente";
+                    p.estado ||
+                    "Pendiente";
 
 
                 html += `
@@ -957,7 +1049,9 @@ async function cargarMisPedidos() {
 
 
         html += `
+
             </div>
+
         `;
 
 
@@ -984,7 +1078,6 @@ async function cargarMisPedidos() {
             error
         );
 
-
         alert(
             "No se pudieron cargar tus pedidos."
         );
@@ -1005,27 +1098,39 @@ const modalDetallePedido =
 
 
 const dFecha =
-    document.getElementById("dFecha");
+    document.getElementById(
+        "dFecha"
+    );
 
 
 const dHora =
-    document.getElementById("dHora");
+    document.getElementById(
+        "dHora"
+    );
 
 
 const dLugar =
-    document.getElementById("dLugar");
+    document.getElementById(
+        "dLugar"
+    );
 
 
 const dPersonas =
-    document.getElementById("dPersonas");
+    document.getElementById(
+        "dPersonas"
+    );
 
 
 const dProductos =
-    document.getElementById("dProductos");
+    document.getElementById(
+        "dProductos"
+    );
 
 
 const dTotal =
-    document.getElementById("dTotal");
+    document.getElementById(
+        "dTotal"
+    );
 
 
 const dDocumento =
@@ -1035,7 +1140,9 @@ const dDocumento =
 
 
 const dEstado =
-    document.getElementById("dEstado");
+    document.getElementById(
+        "dEstado"
+    );
 
 
 const dComentarios =
@@ -1057,7 +1164,6 @@ const cerrarDetallePedido =
 document.addEventListener(
     "click",
     event => {
-
 
         const boton =
             event.target.closest(
@@ -1139,12 +1245,16 @@ document.addEventListener(
             if (dEstado) {
 
                 dEstado.innerText =
-                    p.estado || "Pendiente";
+                    p.estado ||
+                    "Pendiente";
 
 
                 dEstado.className =
                     "estado " +
-                    (p.estado || "Pendiente");
+                    (
+                        p.estado ||
+                        "Pendiente"
+                    );
 
             }
 
@@ -1157,7 +1267,6 @@ document.addEventListener(
                     p.productos
                 )
             ) {
-
 
                 p.productos.forEach(
                     prod => {
@@ -1210,7 +1319,8 @@ document.addEventListener(
             if (dRespuestaComedor) {
 
                 dRespuestaComedor.value =
-                    p.respuestaComedor || "";
+                    p.respuestaComedor ||
+                    "";
 
             }
 
@@ -1361,14 +1471,12 @@ if (confirmarEliminar) {
     confirmarEliminar.onclick =
         async () => {
 
-
             if (!pedidoEliminar) {
                 return;
             }
 
 
             try {
-
 
                 const configRef =
                     doc(
