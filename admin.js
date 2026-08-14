@@ -26,11 +26,11 @@ let pedidosCache = [];
 
 onAuthStateChanged(auth, (user) => {
 
-    if (!user) {
+if (!user) {
 
-        window.location.href = "index.html";
+    window.location.href = "login.html";
 
-    }
+}
 
 });
 
@@ -57,7 +57,7 @@ document.getElementById("btnSalir").onclick = async () => {
 
     await signOut(auth);
 
-    window.location.href = "index.html";
+    window.location.href = "login.html";
 
 };
 
