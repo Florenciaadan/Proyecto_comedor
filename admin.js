@@ -23,6 +23,7 @@ import emailjs from "https://cdn.jsdelivr.net/npm/@emailjs/browser@4/+esm";
 
 const EMAILJS_SERVICE_ID = "service_comedorlasa";
 const EMAILJS_TEMPLATE_ID = "template_9w3ugxt";
+const EMAILJS_RESPUESTA_TEMPLATE_ID = "template_wrbm6sm";
 const EMAILJS_PUBLIC_KEY = "bUNcS8Ra993mmhOA0";
 
 emailjs.init({
@@ -2638,7 +2639,6 @@ async function enviarNotificacionEmail(
         pedido.email ||
         "";
 
-
     if (!email) {
 
         console.warn(
@@ -2646,8 +2646,92 @@ async function enviarNotificacionEmail(
         );
 
         return;
+    }
+
+    const productosTexto =
+        productos
+            .map(
+                producto =>
+                    `• ${producto.nombre} x${producto.cantidad} (${producto.unidad}) - ${formatoMoneda(producto.subtotal)}`
+            )
+            .join("\n");
+
+    let asunto = "";
+    let mensaje = "";
+
+    if (estado === "Aprobado") {
+
+        asunto = "Tu pedido fue aceptado";
+
+        mensaje =
+            "Tu pedido fue aceptado por el comedor.";
+
+    } else if (estado === "Rechazado") {
+
+        asunto = "Tu pedido fue rechazado";
+
+        mensaje =
+            "Tu pedido fue rechazado por el comedor.";
+
+    } else {
+
+        asunto = "Actualización de tu pedido";
+
+        mensaje =
+            "Tu pedido fue actualizado por el comedor.";
 
     }
+
+    const params = {
+
+        to_email: email,
+
+        asunto: asunto,
+
+        mensaje: mensaje,
+
+        usuario: email,
+
+        fecha_evento:
+            formatearFecha(
+                pedido.fechaEvento
+            ),
+
+        hora:
+            pedido.hora || "",
+
+        lugar:
+            pedido.lugar || "",
+
+        personas:
+            pedido.personas || "",
+
+        numero_documento:
+            pedido.numeroDocumento || "",
+
+        productos:
+            productosTexto,
+
+        total:
+            formatoMoneda(total),
+
+        respuesta_comedor:
+            respuesta || "Sin comentarios."
+
+    };
+
+    console.log(
+        "Enviando respuesta al solicitante:",
+        params
+    );
+
+    await emailjs.send(
+        EMAILJS_SERVICE_ID,
+        EMAILJS_RESPUESTA_TEMPLATE_ID,
+        params
+    );
+
+}
 
 
     const productosTexto =
