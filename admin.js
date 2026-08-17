@@ -556,31 +556,41 @@ function renderizarPedidos() {
 
 function obtenerTotalNumerico(pedido) {
 
+    // 1. Primero intentamos calcular el total desde los productos
     if (Array.isArray(pedido.productos) && pedido.productos.length > 0) {
 
         const totalProductos = pedido.productos.reduce(
             (suma, producto) => {
 
-                const precio =
-                    Number(producto.precio) || 0;
+                const precio = Number(producto.precio);
 
-                const cantidad =
-                    Number(producto.cantidad) || 0;
+                const cantidad = Number(producto.cantidad);
 
-                return suma + (precio * cantidad);
+                const precioSeguro =
+                    Number.isFinite(precio) ? precio : 0;
+
+                const cantidadSegura =
+                    Number.isFinite(cantidad) ? cantidad : 0;
+
+                return suma + (precioSeguro * cantidadSegura);
             },
             0
         );
 
-        if (totalProductos > 0) {
+        if (Number.isFinite(totalProductos) && totalProductos > 0) {
             return totalProductos;
         }
     }
 
-    if (typeof pedido.total === "number") {
+    // 2. Si existe pedido.total como número válido
+    if (
+        typeof pedido.total === "number" &&
+        Number.isFinite(pedido.total)
+    ) {
         return pedido.total;
     }
 
+    // 3. Si pedido.total viene como texto
     if (typeof pedido.total === "string") {
 
         const texto = pedido.total
@@ -596,6 +606,7 @@ function obtenerTotalNumerico(pedido) {
         }
     }
 
+    // 4. Nunca mostrar NaN
     return 0;
 }
 
