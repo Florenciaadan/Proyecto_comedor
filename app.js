@@ -326,25 +326,36 @@ function documentoValido() {
         return false;
     }
 
-    const n =
-        numeroDocumento.value;
+    const n = numeroDocumento.value.trim();
 
-    return (
+    const tipo =
+        document.getElementById("tipoDocumento")?.value || "";
 
-        (
-            n.startsWith("47000") &&
-            n.length === 10
-        )
+    if (n.length !== 10) {
+        return false;
+    }
 
-        ||
+    const numero = Number(n);
 
-        (
-            n.startsWith("4500") &&
-            n.length === 10
-        )
+    if (tipo === "PD") {
 
-    );
+        return (
+            numero >= 4700042009 &&
+            numero <= 4700050000
+        );
 
+    }
+
+    if (tipo === "OC") {
+
+        return (
+            numero >= 4500104325 &&
+            numero <= 4500999999
+        );
+
+    }
+
+    return false;
 }
 
 
