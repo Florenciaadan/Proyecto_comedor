@@ -554,6 +554,52 @@ function renderizarPedidos() {
 }
 
 
+function obtenerTotalNumerico(pedido) {
+
+    if (Array.isArray(pedido.productos) && pedido.productos.length > 0) {
+
+        const totalProductos = pedido.productos.reduce(
+            (suma, producto) => {
+
+                const precio =
+                    Number(producto.precio) || 0;
+
+                const cantidad =
+                    Number(producto.cantidad) || 0;
+
+                return suma + (precio * cantidad);
+            },
+            0
+        );
+
+        if (totalProductos > 0) {
+            return totalProductos;
+        }
+    }
+
+    if (typeof pedido.total === "number") {
+        return pedido.total;
+    }
+
+    if (typeof pedido.total === "string") {
+
+        const texto = pedido.total
+            .replace(/\$/g, "")
+            .replace(/\s/g, "")
+            .replace(/\./g, "")
+            .replace(",", ".");
+
+        const numero = Number(texto);
+
+        if (Number.isFinite(numero)) {
+            return numero;
+        }
+    }
+
+    return 0;
+}
+
+
 // =====================================================
 // TABLA PEDIDOS
 // =====================================================
@@ -716,15 +762,9 @@ function generarTablaPedidos(
                 </td>
 
 
-                <td>
-
-                    $ ${
-                        Number(
-                            pedido.total || 0
-                        ).toLocaleString("es-AR")
-                    }
-
-                </td>
+<td>
+    $ ${obtenerTotalNumerico(pedido).toLocaleString("es-AR")}
+</td>
 
 
                 <td>

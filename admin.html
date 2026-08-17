@@ -146,6 +146,33 @@
                 display: none;
             }
         }
+
+        /* Ajustes de la tabla de pedidos */
+.tablaProductos th:first-child,
+.tablaProductos td:first-child {
+    width: 45px !important;
+    min-width: 45px !important;
+    max-width: 45px !important;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.tablaProductos th:nth-child(2),
+.tablaProductos td:nth-child(2) {
+    white-space: nowrap;
+}
+
+.tablaProductos th:nth-child(3),
+.tablaProductos td:nth-child(3) {
+    white-space: nowrap;
+}
+
+.tablaProductos .badgeNuevo {
+    display: inline-block;
+    margin-left: 8px;
+    vertical-align: middle;
+    white-space: nowrap;
+}
     </style>
 </head>
 
@@ -241,12 +268,11 @@
         <div class="campoPedido">
             <label for="detalleEstado">Decisión del comedor</label>
 
-            <select id="detalleEstado">
-                <option value="Pendiente">Pendiente</option>
-                <option value="Aprobado">Aceptar pedido</option>
-                <option value="Rechazado">Rechazar pedido</option>
-                <option value="Entregado">Entregado</option>
-            </select>
+<select id="detalleEstado">
+    <option value="Aprobado">Aceptar pedido</option>
+    <option value="Rechazado">Rechazar pedido</option>
+    <option value="AprobadoModificado">Aceptar con modificaciones</option>
+</select>
         </div>
 
         <div class="campoPedido">
