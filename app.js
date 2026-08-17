@@ -611,52 +611,46 @@ if (btnEnviar) {
                             .join("\n");
 
 
-                    await emailjs.send(
-                        "service_comedorlasa",
-                        "template_9w3ugxt",
-                        {
+await emailjs.send(
+    "service_comedorlasa",
+    "template_9w3ugxt",
+    {
+        to_email: "florenciaadan@hotmail.com",
 
-                            usuario:
-                                pedido.usuario,
+        usuario:
+            pedido.usuario,
 
-                            fecha_evento:
-                                pedido.fechaEvento ||
-                                "-",
+        email:
+            pedido.usuario,
 
-                            hora:
-                                pedido.hora ||
-                                "-",
+        fecha_evento:
+            pedido.fechaEvento || "-",
 
-                            lugar:
-                                pedido.lugar ||
-                                "-",
+        hora:
+            pedido.hora || "-",
 
-                            personas:
-                                pedido.personas ||
-                                "-",
+        lugar:
+            pedido.lugar || "-",
 
-                            tipo_documento:
-                                pedido.tipoDocumento ||
-                                "-",
+        personas:
+            pedido.personas || "-",
 
-                            numero_documento:
-                                pedido.numeroDocumento ||
-                                "-",
+        tipo_documento:
+            pedido.tipoDocumento || "-",
 
-                            productos:
-                                productosTexto ||
-                                "-",
+        numero_documento:
+            pedido.numeroDocumento || "-",
 
-                            total:
-                                pedido.total ||
-                                "$0",
+        productos:
+            productosTexto || "-",
 
-                            comentarios:
-                                pedido.comentarios ||
-                                "-"
+        total:
+            pedido.total || "$0",
 
-                        }
-                    );
+        comentarios:
+            pedido.comentarios || "-"
+    }
+);
 
 
                     console.log(
