@@ -11,6 +11,7 @@ import {
     getDocs,
     getDoc,
     addDoc,
+    updateDoc,
     deleteDoc,
     doc,
     serverTimestamp,
@@ -939,6 +940,11 @@ async function cargarMisPedidos() {
                     p.estado ||
                     "Pendiente";
 
+                const textoEstado =
+                    estado === "PendienteConfirmacion"
+                        ? "Esperando confirmación"
+                        : estado;
+
 
                 html += `
 
@@ -958,7 +964,7 @@ async function cargarMisPedidos() {
                                 )}"
                             >
                                 ${escapeHtml(
-                                    estado
+                                    textoEstado
                                 )}
                             </span>
 
@@ -1025,6 +1031,24 @@ async function cargarMisPedidos() {
                         }
 
 
+                        ${
+                            estado === "PendienteConfirmacion"
+                                ? `
+                                    <div class="avisoConfirmacion">
+                                        <strong>El comedor propuso modificaciones.</strong>
+                                        <p>Revisá la respuesta del comedor y confirmá si aceptás los cambios.</p>
+                                        <button
+                                            type="button"
+                                            class="btnConfirmarModificaciones"
+                                            data-id="${escapeHtml(p.id)}"
+                                        >
+                                            Confirmar modificaciones
+                                        </button>
+                                    </div>
+                                `
+                                : ""
+                        }
+
                         <button
                             class="btnDetallePedido"
                             data-pedido="${encodeURIComponent(
@@ -1090,6 +1114,43 @@ async function cargarMisPedidos() {
     }
 
 }
+
+
+// ======================================================
+// CONFIRMAR MODIFICACIONES PROPUESTAS POR EL COMEDOR
+// ======================================================
+
+document.addEventListener("click", async event => {
+    const boton = event.target.closest(".btnConfirmarModificaciones");
+    if (!boton) return;
+
+    const id = boton.dataset.id;
+    if (!id) return;
+
+    const confirmar = confirm(
+        "¿Confirmás las modificaciones propuestas por el comedor? El pedido pasará a Aceptado."
+    );
+    if (!confirmar) return;
+
+    boton.disabled = true;
+    boton.textContent = "Confirmando...";
+
+    try {
+        await updateDoc(doc(db, "pedidos", id), {
+            estado: "Aprobado",
+            confirmacionUsuario: true,
+            fechaConfirmacionUsuario: serverTimestamp()
+        });
+
+        alert("Confirmaste las modificaciones. El pedido ahora figura como Aceptado.");
+        await cargarMisPedidos();
+    } catch (error) {
+        console.error("Error confirmando modificaciones:", error);
+        alert("No se pudo confirmar el pedido. Revisá la consola y volvé a intentar.");
+        boton.disabled = false;
+        boton.textContent = "Confirmar modificaciones";
+    }
+});
 
 
 // ======================================================
@@ -1250,8 +1311,9 @@ document.addEventListener(
             if (dEstado) {
 
                 dEstado.innerText =
-                    p.estado ||
-                    "Pendiente";
+                    p.estado === "PendienteConfirmacion"
+                        ? "Esperando confirmación del usuario"
+                        : (p.estado || "Pendiente");
 
 
                 dEstado.className =

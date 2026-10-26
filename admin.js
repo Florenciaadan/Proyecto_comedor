@@ -349,7 +349,9 @@ function renderizarPedidos() {
 
 
     const pendientes = futuros.filter(
-        p => p.estado === "Pendiente"
+        p =>
+            p.estado === "Pendiente" ||
+            p.estado === "PendienteConfirmacion"
     ).length;
 
 
@@ -704,8 +706,10 @@ function generarTablaPedidos(
             estado;
 
 
-        if (estado === "Aprobado") {
+        if (estado === "Aprobado" || estado === "Aceptado") {
             textoEstado = "Aceptado";
+        } else if (estado === "PendienteConfirmacion") {
+            textoEstado = "Esperando confirmación";
         }
 
 
@@ -1146,16 +1150,14 @@ function filtrarPedidos() {
                 coincideEstado =
                     !esPasado &&
                     (
-                        pedido.estado ===
-                            filtro
-
-                        ||
-
+                        pedido.estado === filtro ||
                         (
-                            filtro ===
-                                "Aprobado" &&
-                            pedido.estado ===
-                                "Aceptado"
+                            filtro === "Pendiente" &&
+                            pedido.estado === "PendienteConfirmacion"
+                        ) ||
+                        (
+                            filtro === "Aprobado" &&
+                            pedido.estado === "Aceptado"
                         )
                     );
 
@@ -1650,10 +1652,12 @@ document.addEventListener(
 
 
             if (estado) {
-
+                // Si el comedor propuso modificaciones, al reabrir
+                // el pedido mostramos esa misma decisión en el selector.
                 estado.value =
-                    pedido.estado || "Pendiente";
-
+                    pedido.estado === "PendienteConfirmacion"
+                        ? "Modificaciones"
+                        : (pedido.estado || "Pendiente");
             }
 
 
@@ -2414,10 +2418,16 @@ if (guardarCambiosPedido) {
             }
 
 
+            const decisionSeleccionada =
+                document.getElementById("detalleEstado").value;
+
+            // "Modificaciones" no significa aceptado todavía:
+            // queda a la espera de que el solicitante confirme.
             const estado =
-                document.getElementById(
-                    "detalleEstado"
-                ).value;
+                decisionSeleccionada === "Modificaciones" ||
+                decisionSeleccionada === "Aceptado con modificaciones"
+                    ? "PendienteConfirmacion"
+                    : decisionSeleccionada;
 
 
             const comentarios =
@@ -2448,6 +2458,14 @@ if (guardarCambiosPedido) {
 
             }
 
+
+            if (
+                estado === "PendienteConfirmacion" &&
+                !respuesta
+            ) {
+                alert("Escribí en 'Respuesta del comedor' qué modificaciones proponés.");
+                return;
+            }
 
             if (
                 estado === "Rechazado" &&
@@ -2741,37 +2759,18 @@ async function enviarNotificacionEmail(
     let mensaje = "";
 
 
-    if (estado === "Aprobado") {
-
-        asunto =
-            "Tu pedido fue aceptado";
-
-
-        mensaje =
-            "Tu pedido fue aceptado por el comedor.";
-
-    }
-
-    else if (estado === "Rechazado") {
-
-        asunto =
-            "Tu pedido fue rechazado";
-
-
-        mensaje =
-            "Tu pedido fue rechazado por el comedor.";
-
-    }
-
-    else {
-
-        asunto =
-            "Actualización de tu pedido";
-
-
-        mensaje =
-            "Tu pedido fue actualizado por el comedor.";
-
+    if (estado === "Aprobado" || estado === "Aceptado") {
+        asunto = "Tu pedido fue aceptado";
+        mensaje = "Tu pedido fue aceptado por el comedor.";
+    } else if (estado === "Rechazado") {
+        asunto = "Tu pedido fue rechazado";
+        mensaje = "Tu pedido fue rechazado por el comedor.";
+    } else if (estado === "PendienteConfirmacion") {
+        asunto = "El comedor propone modificaciones a tu pedido";
+        mensaje = "El comedor propone modificaciones para tu pedido. Ingresá a la aplicación, revisá el detalle y confirmá si aceptás los cambios. Hasta que confirmes, el pedido no está aceptado.";
+    } else {
+        asunto = "Actualización de tu pedido";
+        mensaje = "Tu pedido fue actualizado por el comedor.";
     }
 
 
