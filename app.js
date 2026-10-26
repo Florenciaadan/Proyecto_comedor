@@ -942,8 +942,10 @@ async function cargarMisPedidos() {
 
                 const textoEstado =
                     estado === "PendienteConfirmacion"
-                        ? "Esperando confirmación"
-                        : estado;
+                        ? "Esperando tu confirmación"
+                        : estado === "RechazadoPorUsuario"
+                            ? "Cambios rechazados · esperando al comedor"
+                            : estado;
 
 
                 html += `
@@ -1037,13 +1039,22 @@ async function cargarMisPedidos() {
                                     <div class="avisoConfirmacion">
                                         <strong>El comedor propuso modificaciones.</strong>
                                         <p>Revisá la respuesta del comedor y confirmá si aceptás los cambios.</p>
-                                        <button
-                                            type="button"
-                                            class="btnConfirmarModificaciones"
-                                            data-id="${escapeHtml(p.id)}"
-                                        >
-                                            Confirmar modificaciones
-                                        </button>
+                                        <div class="accionesConfirmacionPedido" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;">
+                                            <button
+                                                type="button"
+                                                class="btnConfirmarModificaciones"
+                                                data-id="${escapeHtml(p.id)}"
+                                            >
+                                                Aceptar cambios
+                                            </button>
+                                            <button
+                                                type="button"
+                                                class="btnRechazarModificaciones"
+                                                data-id="${escapeHtml(p.id)}"
+                                            >
+                                                Rechazar cambios
+                                            </button>
+                                        </div>
                                     </div>
                                 `
                                 : ""
@@ -1121,34 +1132,53 @@ async function cargarMisPedidos() {
 // ======================================================
 
 document.addEventListener("click", async event => {
-    const boton = event.target.closest(".btnConfirmarModificaciones");
+    const botonAceptar = event.target.closest(".btnConfirmarModificaciones");
+    const botonRechazar = event.target.closest(".btnRechazarModificaciones");
+    const boton = botonAceptar || botonRechazar;
     if (!boton) return;
 
     const id = boton.dataset.id;
     if (!id) return;
 
+    const acepta = Boolean(botonAceptar);
     const confirmar = confirm(
-        "¿Confirmás las modificaciones propuestas por el comedor? El pedido pasará a Aceptado."
+        acepta
+            ? "¿Aceptás las modificaciones propuestas por el comedor? El pedido pasará a Aprobado."
+            : "¿Rechazás las modificaciones propuestas? El comedor recibirá tu respuesta para revisar el pedido."
     );
     if (!confirmar) return;
 
     boton.disabled = true;
-    boton.textContent = "Confirmando...";
+    const textoOriginal = boton.textContent;
+    boton.textContent = acepta ? "Aceptando..." : "Enviando rechazo...";
 
     try {
-        await updateDoc(doc(db, "pedidos", id), {
-            estado: "Aprobado",
-            confirmacionUsuario: true,
-            fechaConfirmacionUsuario: serverTimestamp()
-        });
+        await updateDoc(doc(db, "pedidos", id), acepta
+            ? {
+                estado: "Aprobado",
+                confirmacionUsuario: true,
+                decisionModificacionesUsuario: "Aceptadas",
+                fechaConfirmacionUsuario: serverTimestamp()
+            }
+            : {
+                estado: "RechazadoPorUsuario",
+                confirmacionUsuario: false,
+                decisionModificacionesUsuario: "Rechazadas",
+                fechaConfirmacionUsuario: serverTimestamp()
+            }
+        );
 
-        alert("Confirmaste las modificaciones. El pedido ahora figura como Aceptado.");
+        alert(
+            acepta
+                ? "Aceptaste los cambios. El pedido ahora figura como Aprobado."
+                : "Rechazaste los cambios. El comedor verá el pedido para revisarlo."
+        );
         await cargarMisPedidos();
     } catch (error) {
-        console.error("Error confirmando modificaciones:", error);
-        alert("No se pudo confirmar el pedido. Revisá la consola y volvé a intentar.");
+        console.error("Error guardando la decisión sobre modificaciones:", error);
+        alert("No se pudo guardar tu decisión. Revisá la conexión y volvé a intentar.");
         boton.disabled = false;
-        boton.textContent = "Confirmar modificaciones";
+        boton.textContent = textoOriginal;
     }
 });
 
@@ -1312,8 +1342,10 @@ document.addEventListener(
 
                 dEstado.innerText =
                     p.estado === "PendienteConfirmacion"
-                        ? "Esperando confirmación del usuario"
-                        : (p.estado || "Pendiente");
+                        ? "Esperando tu confirmación"
+                        : p.estado === "RechazadoPorUsuario"
+                            ? "Rechazaste los cambios; esperando revisión del comedor"
+                            : (p.estado || "Pendiente");
 
 
                 dEstado.className =

@@ -351,7 +351,8 @@ function renderizarPedidos() {
     const pendientes = futuros.filter(
         p =>
             p.estado === "Pendiente" ||
-            p.estado === "PendienteConfirmacion"
+            p.estado === "PendienteConfirmacion" ||
+            p.estado === "RechazadoPorUsuario"
     ).length;
 
 
@@ -709,7 +710,9 @@ function generarTablaPedidos(
         if (estado === "Aprobado" || estado === "Aceptado") {
             textoEstado = "Aceptado";
         } else if (estado === "PendienteConfirmacion") {
-            textoEstado = "Esperando confirmación";
+            textoEstado = "Esperando confirmación del usuario";
+        } else if (estado === "RechazadoPorUsuario") {
+            textoEstado = "Cambios rechazados por usuario · revisar";
         }
 
 
@@ -1153,7 +1156,10 @@ function filtrarPedidos() {
                         pedido.estado === filtro ||
                         (
                             filtro === "Pendiente" &&
-                            pedido.estado === "PendienteConfirmacion"
+                            (
+                                pedido.estado === "PendienteConfirmacion" ||
+                                pedido.estado === "RechazadoPorUsuario"
+                            )
                         ) ||
                         (
                             filtro === "Aprobado" &&
@@ -1656,8 +1662,10 @@ document.addEventListener(
                 // el pedido mostramos esa misma decisión en el selector.
                 estado.value =
                     pedido.estado === "PendienteConfirmacion"
-                        ? "Modificaciones"
-                        : (pedido.estado || "Pendiente");
+                        ? "AprobadoModificado"
+                        : (pedido.estado === "RechazadoPorUsuario"
+                            ? "Pendiente"
+                            : (pedido.estado || "Pendiente"));
             }
 
 
@@ -2425,6 +2433,7 @@ if (guardarCambiosPedido) {
             // queda a la espera de que el solicitante confirme.
             const estado =
                 decisionSeleccionada === "Modificaciones" ||
+                decisionSeleccionada === "AprobadoModificado" ||
                 decisionSeleccionada === "Aceptado con modificaciones"
                     ? "PendienteConfirmacion"
                     : decisionSeleccionada;
